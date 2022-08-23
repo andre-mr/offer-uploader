@@ -83,6 +83,7 @@ function startUp() {
 
 function setCodefield(e) {
   if (e.target.selectedIndex != 1) {
+    formFieldCode.value = null;
     formFieldCode.disabled = true;
     formFieldCode.classList.add("bg-gray-300");
   } else {
@@ -515,8 +516,16 @@ function editOffer(e) {
   formFieldStore.value = selectedRowElement.querySelector('[title="store"]').textContent;
   formFieldDescription.value = selectedRowElement.querySelector('[title="description"]').textContent;
   formFieldBadge.value = selectedRowElement.querySelector('[title="badge"]').textContent;
+  if (selectedRowElement.querySelector('[title="type"]').textContent == "Código") {
+    formFieldType.selectedIndex = 1;
+    formFieldCode.disabled = false;
+    formFieldCode.classList.remove("bg-gray-300");
+  } else {
+    formFieldType.selectedIndex = 2;
+    formFieldCode.disabled = true;
+    formFieldCode.classList.add("bg-gray-300");
+  }
   formFieldCode.value = selectedRowElement.querySelector('[title="code"]').textContent == "null" ? "" : selectedRowElement.querySelector('[title="code"]').textContent;
-  formFieldType.value = selectedRowElement.querySelector('[title="type"]').textContent;
   formFieldPriority.value = selectedRowElement.querySelector('[title="priority"]').textContent;
   formFieldLocations.value = selectedRowElement.querySelector('[title="locations"]').textContent == "null" ? "" : selectedRowElement.querySelector('[title="locations"]').textContent;
   formFieldVerifiedOn.value = selectedRowElement.querySelector('[title="verified_on"]').textContent.substr(0, 10);
