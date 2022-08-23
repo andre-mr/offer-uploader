@@ -170,14 +170,10 @@ function formatFileName(offer) {
 }
 
 async function changeStoreTag(shortUrl) {
-  console.info('short:', shortUrl);
-  
   if (!shortUrl.match('amzn.to')) return shortUrl;
   
   const longUrl = await unshorter(shortUrl);
   
-  console.info('long:', longUrl);
-
   if (longUrl.indexOf("http") >= 0) {
     if (longUrl.match(/tag=(.*?)(?=&)/)) {
       return longUrl.replace(/tag=(.*?)(?=&)/, `tag=${process.env.STORE_TAG}`);
