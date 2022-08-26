@@ -51,6 +51,10 @@ async function addOffer(offer) {
   }
 }
 
+function extraDescription(description) {
+  return description + "\n\nClube Baby os melhores preços em Fraldas e Lenços";
+}
+
 async function closeBatch() {
   let activeOffers = await offerDb.getActiveOfferList();
   if (!activeOffers || activeOffers.length == 0) {
@@ -64,6 +68,7 @@ async function closeBatch() {
 
   let uploadPackage = [];
   for (const offer of activeOffers) {
+    offer.description = extraDescription(offer.description);
     let fileToPackage = {};
     offer.start_date = todayFormatted;
     offer.verified_on = todayFormatted;
@@ -171,9 +176,9 @@ function formatFileName(offer) {
 
 async function changeStoreTag(shortUrl) {
   if (!shortUrl.match('amzn.to')) return shortUrl;
-  
+
   const longUrl = await unshorter(shortUrl);
-  
+
   if (longUrl.indexOf("http") >= 0) {
     if (longUrl.match(/tag=(.*?)(?=&)/)) {
       return longUrl.replace(/tag=(.*?)(?=&)/, `tag=${process.env.STORE_TAG}`);
