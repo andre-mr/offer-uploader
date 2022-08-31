@@ -52,7 +52,7 @@ async function addOffer(offer) {
 }
 
 function extraDescription(description) {
-  return description + "\n\nClube Baby os melhores preços em Fraldas e Lenços";
+  return description + `\n\n${process.env.CARD_EXTRA_TEXT}`;
 }
 
 async function closeBatch() {
