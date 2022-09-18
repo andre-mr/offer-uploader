@@ -9,7 +9,8 @@ function setupRoutes(app) {
   });
 
   app.use(function (req, res, next) {
-    if (req.query.apiKey && req.query.apiKey == process.env.API_KEY) {
+    if ((req.query.apiKey && req.query.apiKey == process.env.API_KEY)
+      || (req.query.apiKeyConfig && req.query.apiKeyConfig == process.env.API_KEY_CONFIG)) {
       next();
     } else {
       res.statusCode = 200;
@@ -18,6 +19,8 @@ function setupRoutes(app) {
       res.send();
     }
   });
+
+  app.get("/inactive", offerController.getInactiveOfferList);
 
   app.get("/uploaded", offerController.getUploadedOfferList);
 
@@ -30,6 +33,20 @@ function setupRoutes(app) {
   app.delete("/delete", offerController.deleteOffer);
 
   app.post("/batch", offerController.closeBatch);
+
+  app.get("/stores", offerController.getStores);
+  app.post("/stores/add", offerController.addStore);
+  app.delete("/stores/delete", offerController.deleteStore);
+  
+  app.get("/categories", offerController.getCategories);
+  app.post("/categories/add", offerController.addCategory);
+  app.delete("/categories/delete", offerController.deleteCategory);
+  
+  app.get("/signatures", offerController.getSignatures);
+  app.post("/signatures/add", offerController.addSignature);
+  app.delete("/signatures/delete", offerController.deleteSignature);
+
+  app.get("/configs", offerController.getConfigs);
 
   app.get("*", function (req, res) {
     res.statusCode = 404;

@@ -150,32 +150,18 @@
           </div>
           <div class="flex">
             <div class="w-1/4 px-2">
-              <label class="px-1 text-xs text-gray-500">Loja</label>
-              <select
-                class="block appearance-none w-full bg-gray-100 border-gray-300 border text-gray-700 py-2 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
-                id="formFieldStore">
-                <option hidden>Loja</option>
-                <option value="Amazon">Amazon</option>
-                <option value="Americanas">Americanas</option>
-                <option value="Carrefour">Carrefour</option>
-                <option value="Casas Bahia">Casas Bahia</option>
-                <option value="Drogaraia">Drogaraia</option>
-                <option value="Drogaria Araujo">Drogaria Araujo</option>
-                <option value="Drogarias Pacheco">Drogarias Pacheco</option>
-                <option value="Drogaria SP">Drogaria SP</option>
-                <option value="Drogasil">Drogasil</option>
-                <option value="Extra">Extra</option>
-                <option value="Lojas Online">Lojas Online</option>
-                <option value="Magazine Luiza">Magazine Luiza</option>
-                <option value="Natura">Natura</option>
-                <option value="Pague Menos">Pague Menos</option>
-                <option value="Ponto">Ponto</option>
-                <option value="Tricae">Tricae</option>
-              </select>
-              <div class="pointer-events-none absolute inset-y-11 right-0 flex items-center px-2 text-gray-700">
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
+              <div class="relative">
+                <label class="px-1 text-xs text-gray-500">Loja</label>
+                <select
+                  class="block appearance-none w-full bg-gray-100 border-gray-300 border text-gray-700 py-2 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
+                  id="formFieldStore">
+                  <option hidden>Loja</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-11 right-0 flex items-center px-2 text-gray-700">
+                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                  </svg>
+                </div>
               </div>
             </div>
             <div class="w-1/4 px-2">
@@ -248,7 +234,7 @@
                 <label class="px-1 text-xs text-gray-500">Descrição</label>
                 <textarea
                   class="resize-none appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 leading-tight focus:bg-white"
-                  id="formFieldDescription" style="height: 90%" type="text" maxlength="450" rows=16
+                  id="formFieldDescription" style="height: 90%" type="text" maxlength="1500" rows=16
                   placeholder="Descrição"></textarea>
               </div>
             </div>
@@ -259,27 +245,6 @@
                 <select style="height: 90%"
                   class="w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 my-0 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
                   id="formFieldCategories" size="15" multiple>
-                  <option value="Acessórios">Acessórios</option>
-                  <option value="Alimentos e Bebidas">Alimentos e Bebidas</option>
-                  <option value="Bebê Conforto">Bebê Conforto</option>
-                  <option value="Bicicletas Triciclos e Carrinhos">Bicicletas Triciclos e Carrinhos</option>
-                  <option value="Brinquedos">Brinquedos</option>
-                  <option value="Cadeirinha para Automóvel">Cadeirinha para Automóvel</option>
-                  <option value="Calçados">Calçados</option>
-                  <option value="Carrinho de Bebê">Carrinho de Bebê</option>
-                  <option value="Cozinha">Cozinha</option>
-                  <option value="Eletrodomésticos">Eletrodomésticos</option>
-                  <option value="Eletrônicos">Eletrônicos</option>
-                  <option value="Enxoval">Enxoval</option>
-                  <option value="Fraldas em Promoção">Fraldas em Promoção</option>
-                  <option value="Lenços Umedecidos">Lenços Umedecidos</option>
-                  <option value="Livros Educativos">Livros Educativos</option>
-                  <option value="Mamães">Mamães</option>
-                  <option value="Móveis e Decoração">Móveis e Decoração</option>
-                  <option value="Roupas de Cama">Roupas de Cama</option>
-                  <option value="Roupinhas">Roupinhas</option>
-                  <option value="Saúde Higiene e Cuidados Pessoais">Saúde Higiene e Cuidados Pessoais</option>
-                  <option value="Segurança">Segurança</option>
                 </select>
               </div>
             </div>

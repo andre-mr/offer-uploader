@@ -1,16 +1,96 @@
 const mysql = require("mysql2/promise.js");
 
-async function getUploadedOfferList() {
-  // return sqlSelect(
-  //   `SELECT id, title, description, badge, type, code, store, categories, locations, url, image_url, start_date, valid_till, verified_on, priority, notes, image_file
-  //   DATE_FORMAT(CONVERT_TZ(offer.valid_till, '+00:00', '${process.env.TIME_ZONE}'), '%Y/%m/%d') AS valid_till, 
-  //   DATE_FORMAT(CONVERT_TZ(offer.valid_till, '+00:00', '${process.env.TIME_ZONE}'), '%Y/%m/%d') AS valid_till, 
-  //   DATE_FORMAT(CONVERT_TZ(offer.valid_till, '+00:00', '${process.env.TIME_ZONE}'), '%Y/%m/%d') AS valid_till, 
-  //   FROM offer WHERE verified_on IS NOT NULL;`
-  // );
+async function deleteSignature(signature) {
+  let sql = `DELETE FROM signature WHERE id=? `;
+  let values = [signature.id];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
+async function deleteCategory(category) {
+  let sql = `DELETE FROM category WHERE id=? `;
+  let values = [category.id];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
+async function deleteStore(store) {
+  let sql = `DELETE FROM store WHERE id=? `;
+  let values = [store.id];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
+async function deactivateSignatures() {
+  let sql = `UPDATE signature SET active=0 WHERE id>? `;
+  let values = [
+    0
+  ];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
+async function addSignature(signature) {
+  return await sqlInsert(
+    `INSERT INTO signature (description, active) VALUES (?) `,
+    [
+      signature.description,
+      signature.active
+    ]
+  );
+}
+
+async function addCategory(category) {
+  return await sqlInsert(
+    `INSERT INTO category (description) VALUES (?) `,
+    [
+      category.description,
+    ]
+  );
+}
+
+async function addStore(store) {
+  return await sqlInsert(
+    `INSERT INTO store (description) VALUES (?) `,
+    [
+      store.description,
+    ]
+  );
+}
+
+async function getActiveSignature() {
   return sqlSelect(
-    `SELECT id, title, description, badge, type, code, store, categories, locations, url, image_url, DATE_FORMAT(start_date, "%Y-%m-%d") as start_date, DATE_FORMAT(valid_till, "%Y-%m-%d") as valid_till, DATE_FORMAT(verified_on, "%Y-%m-%d") as verified_on, priority, notes, image_file 
-    FROM offer WHERE verified_on IS NOT NULL;`
+    `SELECT *
+    FROM signature 
+    WHERE active=1;`
+  );
+}
+
+async function getSignatures() {
+  return sqlSelect(
+    `SELECT *
+    FROM signature 
+    ORDER BY description ASC;`
+  );
+}
+
+async function getCategories() {
+  return sqlSelect(
+    `SELECT *
+    FROM category 
+    ORDER BY description ASC;`
+  );
+}
+
+async function getStores() {
+  return sqlSelect(
+    `SELECT * 
+    FROM store 
+    ORDER BY description ASC;`
+  )
+}
+
+async function getInactiveOfferList() {
+  return sqlSelect(
+    `SELECT id, title, description, badge, type, code, store, categories, locations, url, image_url, start_date, DATE_FORMAT(valid_till, "%Y-%m-%d") AS valid_till, verified_on, priority, notes, image_file 
+    FROM offer WHERE verified_on IS NOT NULL 
+    ORDER BY id DESC;`
   );
 }
 
@@ -91,7 +171,6 @@ async function updateActiveOffers(activeOffers) {
       if (err) {
         connection.end();
         return false;
-        // throw err;
       }
     });
   }
@@ -159,10 +238,21 @@ async function sqlUpdateOrDelete(updateStatement, values) {
 }
 
 module.exports = {
-  getUploadedOfferList,
   getActiveOfferList,
   addOffer,
   updateOffer,
   deleteOffer,
   updateActiveOffers,
+  getStores,
+  getCategories,
+  getSignatures,
+  addStore,
+  deleteStore,
+  addCategory,
+  deleteCategory,
+  addSignature,
+  deactivateSignatures,
+  deleteSignature,
+  getActiveSignature,
+  getInactiveOfferList,
 };

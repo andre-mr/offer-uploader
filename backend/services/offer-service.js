@@ -4,6 +4,108 @@ const { Readable } = require('stream');
 const sharp = require("sharp");
 const unshorter = require('unshorter');
 
+async function getConfigs() {
+  const configs = { "stores": null, "categories": null };
+  try {
+    const stores = await offerDb.getStores();
+    configs.stores = stores;
+    const categories = await offerDb.getCategories();
+    configs.categories = categories;
+    return configs;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function deleteSignature(signature) {
+  try {
+    return await offerDb.deleteSignature(signature);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function deleteCategory(category) {
+  try {
+    return await offerDb.deleteCategory(category);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function deleteStore(store) {
+  try {
+    return await offerDb.deleteStore(store);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function addSignature(signature) {
+  try {
+    await offerDb.deactivateSignatures();
+  } catch (error) {
+    return false;
+    throw new Error(error.message);
+  }
+  try {
+    return await offerDb.addSignature(signature);
+  } catch (error) {
+    return false;
+    throw new Error(error.message);
+  }
+}
+
+async function addCategory(category) {
+  try {
+    return await offerDb.addCategory(category);
+  } catch (error) {
+    return false;
+    throw new Error(error.message);
+  }
+}
+
+async function addStore(store) {
+  try {
+    return await offerDb.addStore(store);
+  } catch (error) {
+    return false;
+    throw new Error(error.message);
+  }
+}
+
+async function getStores() {
+  try {
+    return await offerDb.getStores();
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getCategories() {
+  try {
+    return await offerDb.getCategories();
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getSignatures() {
+  try {
+    return await offerDb.getSignatures();
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getInactiveOfferList() {
+  try {
+    return await offerDb.getInactiveOfferList();
+  } catch (error) {
+    return false;
+  }
+}
+
 async function getUploadedOfferList() {
   const client = new ftp.Client()
   let fileList;
@@ -18,7 +120,6 @@ async function getUploadedOfferList() {
   } catch (error) {
     client.close();
     return false;
-    // throw new Error(error.message);
   }
   client.close();
   return JSON.stringify(fileList);
@@ -29,7 +130,6 @@ async function getActiveOfferList() {
     return await offerDb.getActiveOfferList();
   } catch (error) {
     return false;
-    // throw new Error(error.message);
   }
 }
 
@@ -42,17 +142,12 @@ async function addOffer(offer) {
   }
 }
 
-async function addOffer(offer) {
-  try {
-    return await offerDb.addOffer(offer);
-  } catch (error) {
-    return false;
-    throw new Error(error.message);
+async function extraDescription(description) {
+  const currentSignature = await offerDb.getActiveSignature();
+  if (currentSignature.length > 0 && currentSignature[0].description) {
+    return description + `\n\n${currentSignature[0].description}`;
   }
-}
-
-function extraDescription(description) {
-  return description + `\n\n${process.env.CARD_EXTRA_TEXT}`;
+  return description;
 }
 
 async function closeBatch() {
@@ -66,19 +161,23 @@ async function closeBatch() {
     .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`
   const directoryPath = `${todayFormatted.substring(0, 4)}/${todayFormatted.substring(5, 7)}`;
 
+  const expireDate = new Date(today.getTime() + (1000 * 60 * 60 * 24 * 4));
+  const expireDateFormatted = `${expireDate.getFullYear()}-${(expireDate.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${expireDate.getDate().toString().padStart(2, "0")}`
+
   let uploadPackage = [];
   for (const offer of activeOffers) {
-    offer.description = extraDescription(offer.description);
+    offer.description = await extraDescription(offer.description);
     let fileToPackage = {};
     offer.start_date = todayFormatted;
     offer.verified_on = todayFormatted;
+    offer.valid_till = expireDateFormatted;
     const fileName = formatFileName(offer);
     offer.image_url = `${process.env.FTP_IMAGE_URL}/${todayFormatted.substring(0, 4)}/${todayFormatted.substring(5, 7)}/${fileName}`;
     const base64Image = offer.image_file.split(';base64,').pop();
     const imageBuffer = Buffer.from(base64Image, 'base64');
-    if (offer.image_file.indexOf('image/png') != -1
-      // || offer.image_file.indexOf('image/jpeg') != -1
-    ) {
+    if (offer.image_file.indexOf('image/png') != -1) {
       const sharpedData = await sharp(imageBuffer)
         .jpeg({ quality: 65 })
         .toBuffer();
@@ -99,7 +198,6 @@ async function closeBatch() {
   result = await offerDb.updateActiveOffers(activeOffers);
   if (!result) return false;
   return await generateCSV(activeOffers, today);
-  return false;
 }
 
 async function upload(uploadPackage, directoryPath) {
@@ -213,4 +311,15 @@ module.exports = {
   updateOffer,
   deleteOffer,
   closeBatch,
+  getStores,
+  getCategories,
+  getSignatures,
+  addStore,
+  deleteStore,
+  addCategory,
+  deleteCategory,
+  addSignature,
+  deleteSignature,
+  getConfigs,
+  getInactiveOfferList,
 };

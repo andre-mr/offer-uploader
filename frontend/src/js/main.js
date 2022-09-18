@@ -49,7 +49,7 @@ const formHeaderTitle = document.getElementById("formHeaderTitle");
 // const urlDomain = "http://localhost:3000";
 // const urlImagesDomain = "https://ibb.co";
 
-let imageFile, selectedOfferId, apiKey;
+let imageFile, selectedOfferId, apiKey, configs = { "stores": null, "categories": null };
 
 // modalDialog.addEventListener("keyup", escapeFromModalDialog);
 btnAddOffer.addEventListener("click", addOfferForm);
@@ -78,7 +78,58 @@ function startUp() {
   } else {
     showLogin(true);
   }
-  formFieldCategoriesSelector();
+}
+
+async function getConfigs() {
+  if (!apiKey) {
+    showLogin(true);
+    return;
+  }
+
+  fetch(`${urlDomain}/configs?apiKey=${apiKey}`)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      if (data.length > 0 && data[0] == "password") {
+        loginText.innerHTML = "Senha inválida!";
+        loginText.classList.add("text-red-500");
+        inputLoginPassword.value = "";
+        showLogin(true);
+        return false;
+      } else {
+        loginText.classList.remove("text-red-500");
+        showLogin(false);
+        populateConfigs(JSON.parse(data));
+        formFieldCategoriesSelector();
+      }
+    })
+    .catch(function (err) {
+      loginText.innerHTML = "Erro na solicitação.";
+      loginText.classList.add("text-red-500");
+      console.log("Something went wrong!", err);
+    });
+}
+
+function populateConfigs(data) {
+  configs.stores = data.stores;
+  configs.categories = data.categories;
+
+  formFieldStore.innerHTML = `<option hidden>Loja</option>`;
+  for (const store of configs.stores) {
+    const newStoreOption = document.createElement('option');
+    newStoreOption.value = store.description;
+    newStoreOption.textContent = store.description;
+    formFieldStore.appendChild(newStoreOption);
+  }
+
+  formFieldCategories.innerHTML = null;
+  for (const category of configs.categories) {
+    const newCategoryOption = document.createElement('option');
+    newCategoryOption.value = category.description;
+    newCategoryOption.textContent = category.description;
+    formFieldCategories.appendChild(newCategoryOption);
+  }
 }
 
 function setCodefield(e) {
@@ -334,6 +385,9 @@ function listOffers() {
         } else {
           createTableEmpty();
         }
+        if (!configs.stores || !configs.categories) {
+          getConfigs();
+        }
       }
     })
     .catch(function (err) {
@@ -403,6 +457,7 @@ function closeBatch() {
       btnConfirmCloseBatch.classList.remove("hidden");
       hideModalCloseBatchConfirmation();
       listClosedBatches();
+      getConfigs();
     })
     .catch(function (err) {
       console.log("Something went wrong!", err);
@@ -600,7 +655,7 @@ async function createTableBatches(tableData) {
   const tableBody = tableBatches.querySelector("tbody");
   tableBody.innerHTML = null;
   for (let i = 0; i < (tableData.length); i++) {
-    // if (i >= 10) break;
+    if (i >= 100) break;
     const row = document.createElement('tr');
     if (i == 0) {
       row.className = "bg-green-300 border-b border-white font-bold transition duration-300 ease-in-out hover:bg-green-400";
