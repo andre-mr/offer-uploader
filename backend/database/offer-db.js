@@ -1,5 +1,11 @@
 const mysql = require("mysql2/promise.js");
 
+async function updateSignature(signature) {
+  let sql = `UPDATE signature SET description=?, date=? WHERE id=? `;
+  let values = [signature.description, signature.date, signature.id];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
 async function deleteSignature(signature) {
   let sql = `DELETE FROM signature WHERE id=? `;
   let values = [signature.id];
@@ -18,20 +24,12 @@ async function deleteStore(store) {
   return await sqlUpdateOrDelete(sql, values);
 }
 
-async function deactivateSignatures() {
-  let sql = `UPDATE signature SET active=0 WHERE id>? `;
-  let values = [
-    0
-  ];
-  return await sqlUpdateOrDelete(sql, values);
-}
-
 async function addSignature(signature) {
   return await sqlInsert(
-    `INSERT INTO signature (description, active) VALUES (?) `,
+    `INSERT INTO signature (description, date) VALUES (?) `,
     [
       signature.description,
-      signature.active
+      signature.date
     ]
   );
 }
@@ -54,19 +52,11 @@ async function addStore(store) {
   );
 }
 
-async function getActiveSignature() {
-  return sqlSelect(
-    `SELECT *
-    FROM signature 
-    WHERE active=1;`
-  );
-}
-
 async function getSignatures() {
   return sqlSelect(
     `SELECT *
     FROM signature 
-    ORDER BY description ASC;`
+    ORDER BY date ASC;`
   );
 }
 
@@ -251,8 +241,7 @@ module.exports = {
   addCategory,
   deleteCategory,
   addSignature,
-  deactivateSignatures,
   deleteSignature,
-  getActiveSignature,
   getInactiveOfferList,
+  updateSignature,
 };

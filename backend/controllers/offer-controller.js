@@ -9,6 +9,15 @@ async function getConfigs(req, res) {
   }
 }
 
+async function updateSignature(req, res) {
+  let result = await offerService.updateSignature(req.body);
+  if (result) {
+    sendResponse(result, res);
+  } else {
+    sendResponse(null, res);
+  }
+}
+
 async function deleteSignature(req, res) {
   let result = await offerService.deleteSignature(req.body);
   if (result) {
@@ -185,4 +194,5 @@ module.exports = {
   deleteSignature,
   getConfigs,
   getInactiveOfferList,
+  updateSignature,
 };
