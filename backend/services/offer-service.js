@@ -17,6 +17,14 @@ async function getConfigs() {
   }
 }
 
+async function updateSignature(signature) {
+  try {
+    return await offerDb.updateSignature(signature);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 async function deleteSignature(signature) {
   try {
     return await offerDb.deleteSignature(signature);
@@ -42,12 +50,6 @@ async function deleteStore(store) {
 }
 
 async function addSignature(signature) {
-  try {
-    await offerDb.deactivateSignatures();
-  } catch (error) {
-    return false;
-    throw new Error(error.message);
-  }
   try {
     return await offerDb.addSignature(signature);
   } catch (error) {
@@ -143,9 +145,14 @@ async function addOffer(offer) {
 }
 
 async function extraDescription(description) {
-  const currentSignature = await offerDb.getActiveSignature();
-  if (currentSignature.length > 0 && currentSignature[0].description) {
-    return description + `\n\n${currentSignature[0].description}`;
+  const signatures = await offerDb.getSignatures();
+  if (signatures && signatures.length > 0) {
+    const today = new Date();
+    for (let i = signatures.length - 1; i >= 0; i--) {
+      if ((new Date(signatures[i].date)) <= today) {
+        return description + `\n\n${signatures[i].description}`;
+      }
+    }
   }
   return description;
 }
@@ -322,4 +329,5 @@ module.exports = {
   deleteSignature,
   getConfigs,
   getInactiveOfferList,
+  updateSignature,
 };

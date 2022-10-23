@@ -45,6 +45,7 @@ function setupRoutes(app) {
   app.get("/signatures", offerController.getSignatures);
   app.post("/signatures/add", offerController.addSignature);
   app.delete("/signatures/delete", offerController.deleteSignature);
+  app.put("/signatures/update", offerController.updateSignature);
 
   app.get("/configs", offerController.getConfigs);
 

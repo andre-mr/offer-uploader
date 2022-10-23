@@ -77,7 +77,6 @@ btnCancelCloseBatch.addEventListener("click", hideModalCloseBatchConfirmation);
 btnConfirmCloseBatch.addEventListener("click", closeBatch);
 btnListClosedBatches.addEventListener("click", listClosedBatches);
 formFieldType.addEventListener("change", setCodefield);
-formFieldTitle.addEventListener("focusout", sanitizeTitle);
 
 loginButton.addEventListener("click", submitApiKey);
 inputLoginPassword.addEventListener("keyup", submitApiKey);
@@ -121,10 +120,6 @@ async function getConfigs() {
       loginText.classList.add("text-red-500");
       console.log("Something went wrong!", err);
     });
-}
-
-function sanitizeTitle(e) {
-  e.target.value = e.target.value.replace(/\&/g, "e");
 }
 
 function populateConfigs(data) {
