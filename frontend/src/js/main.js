@@ -920,16 +920,21 @@ function getProduct(e) {
 
 async function fillFormAmazon() {
   formFieldStore.selectedIndex = 1;
+  amazonDescriptionIndex = 0;
   if (
     amazonProduct &&
     amazonProduct.descriptions &&
-    amazonProduct.descriptions.length > 0
+    amazonProduct.descriptions.length > 1
   ) {
     btnChangeDescription.classList.remove("hidden");
     formFieldDescription.classList.remove("pr-2");
     formFieldDescription.classList.add("pr-10");
+  } else {
+    btnChangeDescription.classList.add("hidden");
+    formFieldDescription.classList.remove("pr-10");
+    formFieldDescription.classList.add("pr-2");
   }
-  formFieldTitle.value = amazonProduct.title;
+  formFieldTitle.value = amazonProduct.title.substring(0, 50);
   formFieldBadge.value = Number.parseFloat(
     amazonProduct.price.value
   ).toLocaleString("pt-br", {
@@ -939,8 +944,8 @@ async function fillFormAmazon() {
   });
   formFieldDescription.value = amazonProduct.price.sns
     ? amazonRecurrencyDescription +
-      amazonProduct.descriptions[amazonDescriptionIndex]
-    : amazonProduct.descriptions[amazonDescriptionIndex];
+      amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)
+    : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
 }
 
 function changeDescription(e) {
@@ -957,8 +962,8 @@ function changeDescription(e) {
     }
     formFieldDescription.value = amazonProduct.price.sns
       ? amazonRecurrencyDescription +
-        amazonProduct.descriptions[amazonDescriptionIndex]
-      : amazonProduct.descriptions[amazonDescriptionIndex];
+        amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)
+      : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
   }
 }
 

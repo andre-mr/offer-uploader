@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+// const fs = require("fs");
 
 async function scrapAmazonProduct(amazonUrl) {
   const isAmzn =
@@ -92,6 +93,7 @@ async function getPrice(page) {
 }
 
 async function getDescriptions(page) {
+  // fs.writeFile("page.html", page, (err) => {}); // to analyse html in order to update scraping rules
   const descriptions = [];
 
   const desc1 = page.match(/(?<=id="productDescription" )(.*)(?=<\/span)/s);
@@ -109,7 +111,7 @@ async function getDescriptions(page) {
 
   let about;
   const about1 = page.match(
-    /(?<=<ul class="a-unordered-list a-vertical a-spacing-mini">)(.*?)(?=<\/ul>)/
+    /(?<=<ul class="a-unordered-list a-vertical a-spacing-mini">)(.*?)(?=<\/ul>)/s
   );
   const about2 = about1
     ? about1[0].match(/(?<=<span class="a-list-item"> )(.*?)(?=  <\/span>)/g)
@@ -124,7 +126,6 @@ async function getDescriptions(page) {
     about = about?.replace(/】/g, " ");
     descriptions.push(about);
   }
-
   return descriptions;
 }
 
