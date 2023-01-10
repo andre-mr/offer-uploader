@@ -935,13 +935,13 @@ async function fillFormAmazon() {
     formFieldDescription.classList.add("pr-2");
   }
   formFieldTitle.value = amazonProduct.title.substring(0, 50);
-  formFieldBadge.value = Number.parseFloat(
-    amazonProduct.price.value
-  ).toLocaleString("pt-br", {
-    style: "decimal",
-    minimumIntegerDigits: 1,
-    minimumFractionDigits: 2,
-  });
+  formFieldBadge.value =
+    "R$ " +
+    Number.parseFloat(amazonProduct.price.value).toLocaleString("pt-br", {
+      style: "decimal",
+      minimumIntegerDigits: 1,
+      minimumFractionDigits: 2,
+    });
   formFieldDescription.value = amazonProduct.price.sns
     ? amazonRecurrencyDescription +
       amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)
