@@ -68,7 +68,7 @@ let imageFile,
   amazonDescriptionIndex = 0;
 
 const amazonRecurrencyDescription = `✔️ Selecione "comprar com recorrência"
-✔️ Confira o desconto lá na tela de pagamento
+✔️ Confira o desconto na tela de pagamento
 
 `;
 
