@@ -1,4 +1,14 @@
 const offerService = require("../services/offer-service.js");
+const scrapAmazon = require("../services/scrap-amazon.js");
+
+async function getAmazonProduct(req, res) {
+  let result = await scrapAmazon.scrapAmazonProduct(req.query.url);
+  if (result) {
+    sendResponse(JSON.stringify(result), res);
+  } else {
+    sendResponse(null, res);
+  }
+}
 
 async function getConfigs(req, res) {
   let result = await offerService.getConfigs();
@@ -106,6 +116,8 @@ async function getInactiveOfferList(req, res) {
   } else {
     sendResponse(null, res);
   }
+
+  // process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getUploadedOfferList(req, res) {
@@ -195,4 +207,5 @@ module.exports = {
   getConfigs,
   getInactiveOfferList,
   updateSignature,
+  getAmazonProduct,
 };

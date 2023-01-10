@@ -53,14 +53,24 @@ const btnCancelCloseBatch = document.getElementById("btnCancelCloseBatch");
 const btnConfirmCloseBatch = document.getElementById("btnConfirmCloseBatch");
 const formFieldLabelImage = document.getElementById("formFieldLabelImage");
 const formHeaderTitle = document.getElementById("formHeaderTitle");
+const btnFillAmazon = document.getElementById("btnFillAmazon");
+const btnChangeDescription = document.getElementById("btnChangeDescription");
+const loadingIcon = document.getElementById("loadingIcon");
 
-// const urlDomain = "http://localhost:3000";
-// const urlImagesDomain = "https://ibb.co";
+const urlDomain = "http://localhost:3000";
+const urlImagesDomain = "https://ibb.co";
 
 let imageFile,
   selectedOfferId,
   apiKey,
-  configs = { stores: null, categories: null };
+  configs = { stores: null, categories: null },
+  amazonProduct,
+  amazonDescriptionIndex = 0;
+
+const amazonRecurrencyDescription = `✔️ Selecione "comprar com recorrência"
+✔️ Confira o desconto lá na tela de pagamento
+
+`;
 
 // modalDialog.addEventListener("keyup", escapeFromModalDialog);
 btnAddOffer.addEventListener("click", addOfferForm);
@@ -81,6 +91,12 @@ formFieldType.addEventListener("change", setCodefield);
 loginButton.addEventListener("click", submitApiKey);
 inputLoginPassword.addEventListener("keyup", submitApiKey);
 btnLogout.addEventListener("click", logout);
+
+// scrap Amazon
+btnFillAmazon.addEventListener("click", getProduct);
+formFieldUrl.addEventListener("keyup", validateAmazon);
+btnChangeDescription.addEventListener("click", changeDescription);
+formFieldStore.addEventListener("change", clearAmazonData);
 
 function startUp() {
   apiKey = localStorage.getItem("APIKEY");
@@ -229,6 +245,7 @@ function hideModalDialog(e) {
   formFieldLabelImage.textContent = "Image";
   hideModalRemoveConfirmation();
   hideModalCloseBatchConfirmation();
+  clearAmazonData("clear");
 }
 
 function showModalRemoveConfirmation() {
@@ -844,6 +861,120 @@ function handleFile(e) {
   };
 
   fileReader.readAsDataURL(file);
+}
+
+function validateAmazon() {
+  if (
+    formFieldUrl.value.indexOf("/amzn.") >= 0 ||
+    formFieldUrl.value.indexOf("amazon.com") >= 0
+  ) {
+    btnFillAmazon.classList.remove("hidden");
+
+    return true;
+  } else {
+    if (!btnFillAmazon.classList.contains("hidden")) {
+      btnFillAmazon.classList.add("hidden");
+    }
+
+    return false;
+  }
+}
+
+function getProduct(e) {
+  e.preventDefault();
+  if (validateAmazon()) {
+    loadingIcon.classList.remove("hidden");
+    fetch(
+      `${urlDomain}/amazonproduct?apiKey=${apiKey}&url=${formFieldUrl.value}`
+    )
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        if (data.length > 0 && data[0] == "password") {
+          loginText.innerHTML = "Senha inválida!";
+          loginText.classList.add("text-red-500");
+          loginField.value = "";
+          logout();
+          showLogin(true);
+          return false;
+        } else {
+          if (data.length > 0) {
+            amazonProduct = JSON.parse(data);
+            fillFormAmazon();
+          }
+        }
+        !loadingIcon.classList.contains("hidden")
+          ? loadingIcon.classList.add("hidden")
+          : null;
+      })
+      .catch(function (err) {
+        headerMessage("Erro no Processamento, tente mais tarde.", true);
+        console.log("Something went wrong!", err);
+        !loadingIcon.classList.contains("hidden")
+          ? loadingIcon.classList.add("hidden")
+          : null;
+      });
+  }
+}
+
+async function fillFormAmazon() {
+  formFieldStore.selectedIndex = 1;
+  if (
+    amazonProduct &&
+    amazonProduct.descriptions &&
+    amazonProduct.descriptions.length > 0
+  ) {
+    btnChangeDescription.classList.remove("hidden");
+    formFieldDescription.classList.remove("pr-2");
+    formFieldDescription.classList.add("pr-10");
+  }
+  formFieldTitle.value = amazonProduct.title;
+  formFieldBadge.value = Number.parseFloat(
+    amazonProduct.price.value
+  ).toLocaleString("pt-br", {
+    style: "decimal",
+    minimumIntegerDigits: 1,
+    minimumFractionDigits: 2,
+  });
+  formFieldDescription.value = amazonProduct.price.sns
+    ? amazonRecurrencyDescription +
+      amazonProduct.descriptions[amazonDescriptionIndex]
+    : amazonProduct.descriptions[amazonDescriptionIndex];
+}
+
+function changeDescription(e) {
+  e.preventDefault();
+  if (
+    amazonProduct &&
+    amazonProduct.descriptions &&
+    amazonProduct.descriptions.length > 0
+  ) {
+    if (amazonDescriptionIndex > 0) {
+      amazonDescriptionIndex = 0;
+    } else {
+      amazonDescriptionIndex = 1;
+    }
+    formFieldDescription.value = amazonProduct.price.sns
+      ? amazonRecurrencyDescription +
+        amazonProduct.descriptions[amazonDescriptionIndex]
+      : amazonProduct.descriptions[amazonDescriptionIndex];
+  }
+}
+
+function clearAmazonData(e) {
+  if (
+    (e.target && e.target.options[e.target.selectedIndex].value != "Amazon") ||
+    e == "clear"
+  ) {
+    amazonProduct = null;
+    amazonDescriptionIndex = 0;
+
+    btnChangeDescription.classList.add("hidden");
+    formFieldDescription.classList.remove("pr-10");
+    formFieldDescription.classList.add("pr-2");
+    btnFillAmazon.classList.add("hidden");
+  }
 }
 
 startUp();

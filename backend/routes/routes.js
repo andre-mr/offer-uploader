@@ -9,8 +9,11 @@ function setupRoutes(app) {
   });
 
   app.use(function (req, res, next) {
-    if ((req.query.apiKey && req.query.apiKey == process.env.API_KEY)
-      || (req.query.apiKeyConfig && req.query.apiKeyConfig == process.env.API_KEY_CONFIG)) {
+    if (
+      (req.query.apiKey && req.query.apiKey == process.env.API_KEY) ||
+      (req.query.apiKeyConfig &&
+        req.query.apiKeyConfig == process.env.API_KEY_CONFIG)
+    ) {
       next();
     } else {
       res.statusCode = 200;
@@ -37,17 +40,19 @@ function setupRoutes(app) {
   app.get("/stores", offerController.getStores);
   app.post("/stores/add", offerController.addStore);
   app.delete("/stores/delete", offerController.deleteStore);
-  
+
   app.get("/categories", offerController.getCategories);
   app.post("/categories/add", offerController.addCategory);
   app.delete("/categories/delete", offerController.deleteCategory);
-  
+
   app.get("/signatures", offerController.getSignatures);
   app.post("/signatures/add", offerController.addSignature);
   app.delete("/signatures/delete", offerController.deleteSignature);
   app.put("/signatures/update", offerController.updateSignature);
 
   app.get("/configs", offerController.getConfigs);
+
+  app.get("/amazonproduct", offerController.getAmazonProduct);
 
   app.get("*", function (req, res) {
     res.statusCode = 404;
