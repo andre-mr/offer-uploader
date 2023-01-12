@@ -71,22 +71,39 @@ async function getTitle(page) {
 }
 
 async function getPrice(page) {
-  const price = page.match(/(?<=price-data">)(.*?)(?=<\/div>)/);
-  const priceOBJ = price ? JSON.parse(price[0]) : null;
   let bestPrice = 0;
-  if (priceOBJ) {
-    for (let i = 0; i < priceOBJ.length; i++) {
-      if (priceOBJ[i].buyingOptionType == "NEW") {
-        snsPrice = false;
-        bestPrice = priceOBJ[i].priceAmount;
-      }
-      if (priceOBJ[i].buyingOptionType == "SNS") {
-        snsPrice = true;
-        bestPrice = priceOBJ[i].priceAmount;
-        break;
+  let snsPrice = false;
+
+  const corePrice1 = page.match(
+    /(?<=id="corePrice_feature_div")(.*?)(?=no Pix)/s
+  );
+  const corePrice2 = corePrice1
+    ? corePrice1[0].match(/(?<=R\$)(.*)(,)([0-9]{2})/)
+    : null;
+  if (corePrice2) {
+    bestPrice = Number.parseFloat(
+      corePrice2[0].replace(".", "").replace(",", ".")
+    );
+  }
+
+  if (bestPrice <= 0) {
+    const price = page.match(/(?<=price-data">)(.*?)(?=<\/div>)/);
+    const priceOBJ = price ? JSON.parse(price[0]) : null;
+    if (priceOBJ) {
+      for (let i = 0; i < priceOBJ.length; i++) {
+        if (priceOBJ[i].buyingOptionType == "NEW") {
+          snsPrice = false;
+          bestPrice = priceOBJ[i].priceAmount;
+        }
+        if (priceOBJ[i].buyingOptionType == "SNS") {
+          snsPrice = true;
+          bestPrice = priceOBJ[i].priceAmount;
+          break;
+        }
       }
     }
   }
+
   const priceDouble = Number.parseFloat(bestPrice.toString());
 
   return { value: priceDouble, sns: snsPrice };
