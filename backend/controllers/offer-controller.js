@@ -127,6 +127,8 @@ async function getUploadedOfferList(req, res) {
   } else {
     sendResponse(null, res);
   }
+
+  // process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getActiveOfferList(req, res) {
