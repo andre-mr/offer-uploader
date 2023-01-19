@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 const mergeImages = require("merge-images");
-const { Canvas, Image } = require("canvas");
+const { Canvas, Image } = require("canvas"); // use node 14 on centOS
 const imageSize = require("image-size");
 const sharp = require("sharp");
 
