@@ -32,15 +32,11 @@ const formFieldDescription = document.getElementById("formFieldDescription");
 const formFieldBadge = document.getElementById("formFieldBadge");
 const formFieldCode = document.getElementById("formFieldCode");
 const formFieldType = document.getElementById("formFieldType");
-const formFieldPriority = document.getElementById("formFieldPriority");
-const formFieldLocations = document.getElementById("formFieldLocations");
-const formFieldVerifiedOn = document.getElementById("formFieldVerifiedOn");
-const formFieldStartDate = document.getElementById("formFieldStartDate");
-const formFieldValidTill = document.getElementById("formFieldValidTill");
-const formFieldNotes = document.getElementById("formFieldNotes");
 const formFieldCategories = document.getElementById("formFieldCategories");
 const formFieldUrl = document.getElementById("formFieldUrl");
-const formFieldInputImage = document.getElementById("formFieldInputImage");
+const formFieldInputImageFile = document.getElementById(
+  "formFieldInputImageFile"
+);
 const btnCancelOffer = document.getElementById("btnCancelOffer");
 const btnCancelOfferRemoving = document.getElementById(
   "btnCancelOfferRemoving"
@@ -55,17 +51,31 @@ const formFieldLabelImage = document.getElementById("formFieldLabelImage");
 const formHeaderTitle = document.getElementById("formHeaderTitle");
 const btnFillAmazon = document.getElementById("btnFillAmazon");
 const btnChangeDescription = document.getElementById("btnChangeDescription");
+const btnChangeImage = document.getElementById("btnChangeImage");
+const btnChangeBackground = document.getElementById("btnChangeBackground");
 const loadingIcon = document.getElementById("loadingIcon");
+
+const backgroundImage = document.getElementById("backgroundImage");
+const productImage = document.getElementById("productImage");
+const formFieldInputImage = document.getElementById("formFieldInputImage");
+const checkImageFile = document.getElementById("checkImageFile");
 
 const urlDomain = "http://localhost:3000";
 const urlImagesDomain = "https://ibb.co";
+const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
 
 let imageFile,
   selectedOfferId,
   apiKey,
   configs = { stores: null, categories: null },
   amazonProduct,
-  amazonDescriptionIndex = 0;
+  amazonDescriptionIndex = 0,
+  amazonImageIndex = 0,
+  imageBackgroundId = 1,
+  imageBackground =
+    imageBackgroundUrl +
+    `background-${imageBackgroundId.toString().padStart(2, "0")}.png`,
+  pendingOffers = [];
 
 const amazonRecurrencyDescription = `✔️ Selecione "comprar com recorrência"
 ✔️ Confira o desconto na tela de pagamento
@@ -74,7 +84,8 @@ const amazonRecurrencyDescription = `✔️ Selecione "comprar com recorrência"
 
 // modalDialog.addEventListener("keyup", escapeFromModalDialog);
 btnAddOffer.addEventListener("click", addOfferForm);
-formFieldInputImage.addEventListener("change", handleFile);
+formFieldInputImageFile.addEventListener("change", handleFile);
+formFieldInputImageFile.addEventListener("click", handleFile);
 btnSaveOffer.addEventListener("click", saveOffer);
 btnSaveOffer.addEventListener("keypress", saveOffer);
 btnCancelOffer.addEventListener("click", hideModalDialog);
@@ -93,10 +104,14 @@ inputLoginPassword.addEventListener("keyup", submitApiKey);
 btnLogout.addEventListener("click", logout);
 
 // scrap Amazon
-btnFillAmazon.addEventListener("click", getProduct);
+btnFillAmazon.addEventListener("click", getAmazonProduct);
 formFieldUrl.addEventListener("keyup", validateAmazon);
 btnChangeDescription.addEventListener("click", changeDescription);
+btnChangeImage.addEventListener("click", changeImage);
+btnChangeBackground.addEventListener("click", changeBackground);
 formFieldStore.addEventListener("change", clearAmazonData);
+formFieldInputImage.addEventListener("input", changeImage);
+checkImageFile.addEventListener("change", changeImageMethod);
 
 function startUp() {
   apiKey = localStorage.getItem("APIKEY");
@@ -105,6 +120,8 @@ function startUp() {
   } else {
     showLogin(true);
   }
+  // showModalDialog(); // testing...
+  changeBackground();
 }
 
 async function getConfigs() {
@@ -220,7 +237,6 @@ function showModalDialog() {
 }
 
 function escapeFromModalDialog(e) {
-  console.log(e.key);
   if (e && e.key && (e.key == "Escape" || e.keyCode == 27)) {
     hideModalDialog();
   }
@@ -240,9 +256,7 @@ function hideModalDialog(e) {
   selectedOfferId = null;
   formOffer.reset();
   formFieldLabelImage.classList.remove("font-bold");
-  formFieldLabelImage.classList.remove("text-red-500");
-  formFieldLabelImage.classList.add("text-gray-500");
-  formFieldLabelImage.textContent = "Image";
+  formFieldLabelImage.textContent = "Imagem";
   hideModalRemoveConfirmation();
   hideModalCloseBatchConfirmation();
   clearAmazonData("clear");
@@ -261,13 +275,15 @@ function hideModalRemoveConfirmation() {
 }
 
 function addOfferForm() {
-  formFieldPriority.value = 0;
   formFieldType.selectedIndex = 2;
   formFieldCode.disabled = true;
   formFieldCode.classList.add("bg-gray-300");
   formHeaderTitle.classList.remove("text-orange-500");
   formHeaderTitle.classList.add("text-blue-500");
   formHeaderTitle.textContent = "Nova oferta";
+  productImage.src = "";
+  backgroundImage.src = imageBackground;
+  imageFile = null;
   showModalDialog();
 }
 
@@ -299,7 +315,13 @@ function highlightInvalidFormFields() {
   if (!formFieldCategories.selectedOptions.length > 0)
     formFieldCategories.classList.add(redOutline);
   if (!formFieldUrl.value) formFieldUrl.classList.add(redOutline);
-  if (!imageFile) formFieldInputImage.classList.add(redOutline);
+  if (checkImageFile.checked) {
+    if (!imageFile) {
+      formFieldInputImageFile.classList.add(redOutline);
+    }
+  } else if (!formFieldInputImage.value) {
+    formFieldInputImage.classList.add(redOutline);
+  }
 }
 
 function resetInvalidFormFields() {
@@ -312,6 +334,7 @@ function resetInvalidFormFields() {
   formFieldCategories.classList.remove(redOutline);
   formFieldUrl.classList.remove(redOutline);
   formFieldInputImage.classList.remove(redOutline);
+  formFieldInputImageFile.classList.remove(redOutline);
 }
 
 function checkForm() {
@@ -326,7 +349,8 @@ function checkForm() {
       formFieldCode.value) ||
     !formFieldCategories.selectedOptions.length > 0 ||
     !formFieldUrl.value ||
-    !imageFile
+    (checkImageFile.checked && !imageFile) ||
+    (!checkImageFile.checked && !formFieldInputImage.value)
   ) {
     resetInvalidFormFields();
     highlightInvalidFormFields();
@@ -363,16 +387,21 @@ function saveOffer(e) {
       (option) => option.value
     ) +
     '"';
-  selectedOffer.locations = formFieldLocations.value
-    ? formFieldLocations.value
-    : null;
+  selectedOffer.locations = null;
   selectedOffer.url = formFieldUrl.value;
-  selectedOffer.valid_till = formFieldValidTill.value
-    ? formFieldValidTill.value
+  selectedOffer.valid_till = null;
+  selectedOffer.priority = 0;
+  selectedOffer.notes = null;
+  selectedOffer.image_file = checkImageFile.checked ? imageFile : null;
+  selectedOffer.imageBackground = !checkImageFile.checked
+    ? imageBackground
     : null;
-  selectedOffer.priority = formFieldPriority.value;
-  selectedOffer.notes = formFieldNotes.value ? formFieldNotes.value : null;
-  selectedOffer.image_file = imageFile;
+  selectedOffer.imageUrl =
+    !checkImageFile.checked &&
+    amazonProduct.imageUrls &&
+    amazonProduct.imageUrls.length > 0
+      ? amazonProduct.imageUrls[amazonImageIndex]
+      : null;
 
   const defaultHeader = new Headers();
   defaultHeader.append("Content-Type", "application/json");
@@ -432,7 +461,11 @@ function listOffers() {
             `Ofertas adicionadas ao lote atual: ${data.length}`,
             false
           );
-          createTable(data);
+          pendingOffers = [];
+          for (const item of data) {
+            pendingOffers.push(item);
+          }
+          createTable(pendingOffers);
           hideModalDialog();
         } else {
           createTableEmpty();
@@ -657,29 +690,9 @@ function editOffer(e) {
     selectedRowElement.querySelector('[title="code"]').textContent == "null"
       ? ""
       : selectedRowElement.querySelector('[title="code"]').textContent;
-  formFieldPriority.value =
-    selectedRowElement.querySelector('[title="priority"]').textContent;
-  formFieldLocations.value =
-    selectedRowElement.querySelector('[title="locations"]').textContent ==
-    "null"
-      ? ""
-      : selectedRowElement.querySelector('[title="locations"]').textContent;
-  formFieldVerifiedOn.value = selectedRowElement
-    .querySelector('[title="verified_on"]')
-    .textContent.substr(0, 10);
-  formFieldStartDate.value = selectedRowElement
-    .querySelector('[title="start_date"]')
-    .textContent.substr(0, 10);
-  formFieldValidTill.value = selectedRowElement
-    .querySelector('[title="valid_till"]')
-    .textContent.substr(0, 10);
-  formFieldNotes.value =
-    selectedRowElement.querySelector('[title="notes"]').textContent == "null"
-      ? ""
-      : selectedRowElement.querySelector('[title="notes"]').textContent;
   formFieldUrl.value =
     selectedRowElement.querySelector('[title="url"]').textContent;
-
+  validateAmazon();
   const categories = selectedRowElement
     .querySelector('[title="categories"]')
     .textContent.replace(/"/g, "")
@@ -695,19 +708,24 @@ function editOffer(e) {
   imageFile = selectedRowElement.querySelector(
     '[title="image_file"]'
   ).textContent;
-  let fileInfo = imageFile.match(/(?<=data:).*(?=;)/)[0];
-  formFieldLabelImage.textContent = `Arquivo "${fileInfo}" existente. Selecione outro se necessário.`;
+  if (imageFile) {
+    formFieldLabelImage.textContent = `Imagem existente. Escolha outra se necessário.`;
+  } else {
+    formFieldLabelImage.textContent = `Imagem inexistente. Escolha uma.`;
+  }
   formFieldLabelImage.classList.add("font-bold");
-  formFieldLabelImage.classList.add("text-red-500");
+
+  backgroundImage.src = imageFile;
+  productImage.src = "";
 
   showModalDialog();
 }
 
-function createTable(tableData) {
+function createTable(offers) {
   let tableBody = tableOffers.querySelector("tbody");
   tableBody.innerHTML = null;
 
-  tableData.forEach(function (rowData) {
+  offers.forEach(function (offer) {
     const row = document.createElement("tr");
     row.className =
       "bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100";
@@ -720,7 +738,7 @@ function createTable(tableData) {
     cellEditButton.querySelector("svg").addEventListener("click", editOffer);
     cellEditButton.querySelector("path").addEventListener("click", editOffer);
 
-    Object.keys(rowData).forEach(function (key) {
+    Object.keys(offer).forEach(function (key) {
       var cell = document.createElement("td");
       if (
         key != "title" &&
@@ -735,10 +753,10 @@ function createTable(tableData) {
         "text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap";
       if (key == "type") {
         let typeValue;
-        typeValue = rowData[key] == "code" ? "Código" : "Oferta";
+        typeValue = offer[key] == "code" ? "Código" : "Oferta";
         cell.appendChild(document.createTextNode(typeValue));
       } else {
-        cell.appendChild(document.createTextNode(rowData[key]));
+        cell.appendChild(document.createTextNode(offer[key]));
       }
       row.appendChild(cell);
     });
@@ -853,14 +871,31 @@ function createTableEmptyBatches() {
 }
 
 function handleFile(e) {
-  let file = e.target.files[0];
-  let fileReader = new FileReader();
+  if (e.type == "click") {
+    imageFile = null;
+    backgroundImage.src = "";
+    productImage.src = "";
+    formFieldLabelImage.textContent = "Imagem";
+    formFieldLabelImage.classList.remove("font-bold");
+  } else {
+    imageFile = null;
+    backgroundImage.src = "";
+    productImage.src = "";
+    formFieldLabelImage.textContent = "Imagem";
+    formFieldLabelImage.classList.remove("font-bold");
+    if (e.target.files.length > 0) {
+      let file = e.target.files[0];
+      let fileReader = new FileReader();
 
-  fileReader.onloadend = () => {
-    imageFile = fileReader.result;
-  };
+      fileReader.onloadend = () => {
+        imageFile = fileReader.result;
+        backgroundImage.src = imageFile;
+        productImage.src = "";
+      };
 
-  fileReader.readAsDataURL(file);
+      fileReader.readAsDataURL(file);
+    }
+  }
 }
 
 function validateAmazon() {
@@ -880,7 +915,7 @@ function validateAmazon() {
   }
 }
 
-function getProduct(e) {
+function getAmazonProduct(e) {
   e.preventDefault();
   if (validateAmazon()) {
     loadingIcon.classList.remove("hidden");
@@ -921,6 +956,7 @@ function getProduct(e) {
 async function fillFormAmazon() {
   formFieldStore.selectedIndex = 1;
   amazonDescriptionIndex = 0;
+  amazonImageIndex = 0;
   if (
     amazonProduct &&
     amazonProduct.descriptions &&
@@ -934,6 +970,16 @@ async function fillFormAmazon() {
     formFieldDescription.classList.remove("pr-10");
     formFieldDescription.classList.add("pr-2");
   }
+  if (
+    amazonProduct &&
+    amazonProduct.imageUrls &&
+    amazonProduct.imageUrls.length > 1 &&
+    !checkImageFile.checked
+  ) {
+    btnChangeImage.classList.remove("hidden");
+  } else {
+    btnChangeImage.classList.add("hidden");
+  }
   formFieldTitle.value = amazonProduct.title.substring(0, 50);
   formFieldBadge.value =
     "R$ " +
@@ -946,6 +992,14 @@ async function fillFormAmazon() {
     ? amazonRecurrencyDescription +
       amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)
     : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
+  formFieldInputImage.value =
+    amazonProduct.imageUrls &&
+    amazonProduct.imageUrls.length > 0 &&
+    !checkImageFile.checked
+      ? amazonProduct.imageUrls[0]
+      : "";
+  imageFile = null;
+  productImage.src = formFieldInputImage.value;
 }
 
 function changeDescription(e) {
@@ -967,6 +1021,63 @@ function changeDescription(e) {
   }
 }
 
+function changeImage(e) {
+  if (e.type == "click") {
+    e.preventDefault();
+    if (
+      amazonProduct &&
+      amazonProduct.imageUrls &&
+      amazonProduct.imageUrls.length > 0
+    ) {
+      if (amazonImageIndex >= amazonProduct.imageUrls.length - 1) {
+        amazonImageIndex = 0;
+      } else {
+        amazonImageIndex++;
+      }
+      formFieldInputImage.value = amazonProduct.imageUrls[amazonImageIndex];
+    }
+  }
+  backgroundImage.src = imageBackground;
+  productImage.src = formFieldInputImage.value;
+  formFieldLabelImage.textContent = "Imagem";
+  formFieldLabelImage.classList.remove("font-bold");
+}
+
+function changeBackground(e) {
+  if (e) {
+    e.preventDefault();
+  }
+  if (imageBackgroundId >= 4) {
+    imageBackgroundId = 1;
+  } else {
+    imageBackgroundId++;
+  }
+  imageBackground =
+    imageBackgroundUrl +
+    `background-${imageBackgroundId.toString().padStart(2, "0")}.png`;
+  backgroundImage.src = imageBackground;
+}
+
+function changeImageMethod(e) {
+  if (e.target.checked) {
+    btnChangeBackground.classList.add("hidden");
+    formFieldInputImage.classList.add("hidden");
+    formFieldInputImageFile.classList.remove("hidden");
+    btnChangeImage.classList.add("hidden");
+    backgroundImage.src = imageFile ? imageFile : "";
+    productImage.src = "";
+  } else {
+    btnChangeBackground.classList.remove("hidden");
+    formFieldInputImage.classList.remove("hidden");
+    formFieldInputImageFile.classList.add("hidden");
+    if (amazonProduct && amazonProduct.imageUrls) {
+      btnChangeImage.classList.remove("hidden");
+    }
+    backgroundImage.src = imageBackground;
+    productImage.src = formFieldInputImage.value;
+  }
+}
+
 function clearAmazonData(e) {
   if (
     (e.target && e.target.options[e.target.selectedIndex].value != "Amazon") ||
@@ -979,7 +1090,12 @@ function clearAmazonData(e) {
     formFieldDescription.classList.remove("pr-10");
     formFieldDescription.classList.add("pr-2");
     btnFillAmazon.classList.add("hidden");
+    btnChangeImage.classList.add("hidden");
   }
+  formFieldInputImage.classList.remove("hidden");
+  !formFieldInputImageFile.classList.contains("hidden")
+    ? formFieldInputImageFile.classList.add("hidden")
+    : null;
 }
 
 startUp();

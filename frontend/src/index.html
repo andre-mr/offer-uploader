@@ -219,9 +219,9 @@
         <div
           id="modalDialog"
           tabindex="0"
-          class="hidden fixed z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[95%] w-[60%] bg-white rounded-md p-3 space-y-2"
+          class="hidden fixed flex flex-col justify-between z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[95%] w-[80%] bg-white rounded-md p-3 space-y-2"
         >
-          <div class="flex justify-between">
+          <div class="flex justify-between h-[5%]">
             <h3
               id="formHeaderTitle"
               class="text-2xl font-semibold text-blue-500"
@@ -236,144 +236,96 @@
             </h3>
           </div>
 
-          <form id="formOffer" class="w-full">
-            <div class="w-100 px-2">
-              <label class="px-1 text-xs text-gray-500">Título</label>
-              <input
-                class="appearance-none block w-full bg-gray-100 border border-gray-300 text-gray-700 rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                id="formFieldTitle"
-                type="text"
-                maxlength="50"
-                placeholder="Título"
-              />
-            </div>
-            <div class="flex">
-              <div class="w-1/4 px-2">
-                <div class="relative">
-                  <label class="px-1 text-xs text-gray-500">Loja</label>
-                  <select
-                    class="block appearance-none w-full bg-gray-100 border-gray-300 border text-gray-700 py-2 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
-                    id="formFieldStore"
-                  >
-                    <option hidden>Loja</option>
-                  </select>
-                  <div
-                    class="pointer-events-none absolute inset-y-11 right-0 flex items-center px-2 text-gray-700"
-                  >
-                    <svg
-                      class="fill-current h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                      />
-                    </svg>
-                  </div>
+          <form
+            id="formOffer"
+            class="w-full h-[95%] flex flex-col justify-between"
+          >
+            <!-- form content -->
+            <div class="flex h-[94%]">
+              <!-- col1 -->
+              <div class="flex flex-col w-full justify-between">
+                <div class="w-full px-2">
+                  <label class="px-1 text-xs text-gray-500">Título</label>
+                  <input
+                    class="appearance-none block w-full bg-gray-100 border border-gray-300 text-gray-700 rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
+                    id="formFieldTitle"
+                    type="text"
+                    maxlength="50"
+                    placeholder="Título"
+                  />
                 </div>
-              </div>
-              <div class="w-1/4 px-2">
-                <label class="px-1 text-xs text-gray-500">Badge</label>
-                <input
-                  class="appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                  id="formFieldBadge"
-                  type="text"
-                  maxlength="20"
-                  placeholder="Melhor Oferta"
-                />
-              </div>
-              <div class="w-1/4 px-2">
-                <div class="relative">
-                  <label class="px-1 text-xs text-gray-500">Tipo</label>
-                  <select
-                    class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
-                    id="formFieldType"
-                  >
-                    <option hidden>Tipo</option>
-                    <option value="code">Código</option>
-                    <option value="deal">Oferta</option>
-                  </select>
-                  <div
-                    class="pointer-events-none absolute inset-y-11 right-0 flex items-center px-2 text-gray-700"
-                  >
-                    <svg
-                      class="fill-current h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                      />
-                    </svg>
+                <div class="flex w-full">
+                  <div class="w-1/4 px-2">
+                    <div class="relative">
+                      <label class="px-1 text-xs text-gray-500">Loja</label>
+                      <select
+                        class="block appearance-none w-full bg-gray-100 border-gray-300 border text-gray-700 py-2 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
+                        id="formFieldStore"
+                      >
+                        <option hidden>Loja</option>
+                      </select>
+                      <div
+                        class="pointer-events-none absolute inset-y-11 right-0 flex items-center px-2 text-gray-700"
+                      >
+                        <svg
+                          class="fill-current h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="w-1/4 px-2">
-                <label class="px-1 text-xs text-gray-500">Código</label>
-                <input
-                  class="appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                  id="formFieldCode"
-                  type="text"
-                  maxlength="20"
-                  placeholder="Código"
-                />
-              </div>
-              <div class="hidden w-1/4 px-2">
-                <label class="px-1 text-xs text-gray-500">Válido até</label>
-                <input
-                  disabled
-                  class="appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                  id="formFieldValidTill"
-                  type="date"
-                />
-              </div>
-              <div hidden class="w-1/4 px-2">
-                <label class="px-1 text-xs text-gray-500">Prioridade</label>
-                <input
-                  class="appearance-none block w-full bg-gray-300 border-gray-100 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                  id="formFieldPriority"
-                  type="number"
-                  min="0"
-                  placeholder="Prioridade"
-                />
-              </div>
-              <div class="hidden w-1/4 px-2">
-                <label class="px-1 text-xs text-gray-500">Data de início</label>
-                <input
-                  disabled
-                  class="appearance-none block w-full bg-gray-300 border-gray-100 text-gray-400 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                  id="formFieldStartDate"
-                  type="date"
-                />
-              </div>
-              <div class="hidden w-1/4 px-2">
-                <label class="px-1 text-xs text-gray-500">Verificado em</label>
-                <input
-                  disabled
-                  class="appearance-none block w-full bg-gray-300 border-gray-100 text-gray-400 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                  id="formFieldVerifiedOn"
-                  type="date"
-                />
-              </div>
-            </div>
-            <div class="flex flex-row">
-              <div class="flex flex-col w-full">
-                <div class="flex">
-                  <div class="hidden w-1/2 px-2">
-                    <label class="px-1 text-xs text-gray-500"
-                      >Localidades</label
-                    >
+                  <div class="w-1/4 px-2">
+                    <label class="px-1 text-xs text-gray-500">Badge</label>
                     <input
-                      disabled
-                      class="appearance-none block w-full bg-gray-300 border-gray-100 text-gray-500 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
-                      id="formFieldLocations"
+                      class="appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
+                      id="formFieldBadge"
                       type="text"
-                      maxlength="50"
-                      placeholder=""
+                      maxlength="20"
+                      placeholder="Melhor Oferta"
+                    />
+                  </div>
+                  <div class="w-1/4 px-2">
+                    <div class="relative">
+                      <label class="px-1 text-xs text-gray-500">Tipo</label>
+                      <select
+                        class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
+                        id="formFieldType"
+                      >
+                        <option hidden>Tipo</option>
+                        <option value="code">Código</option>
+                        <option value="deal">Oferta</option>
+                      </select>
+                      <div
+                        class="pointer-events-none absolute inset-y-11 right-0 flex items-center px-2 text-gray-700"
+                      >
+                        <svg
+                          class="fill-current h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w-1/4 px-2">
+                    <label class="px-1 text-xs text-gray-500">Código</label>
+                    <input
+                      class="appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
+                      id="formFieldCode"
+                      type="text"
+                      maxlength="20"
+                      placeholder="Código"
                     />
                   </div>
                 </div>
-
                 <div class="w-full px-2 py-0">
                   <label class="px-1 text-xs text-gray-500">Descrição</label>
                   <div class="relative">
@@ -383,7 +335,7 @@
                       style="height: 90%"
                       type="text"
                       maxlength="8500"
-                      rows="16"
+                      rows="18"
                       placeholder="Descrição"
                     ></textarea>
                     <button
@@ -406,34 +358,7 @@
                     </button>
                   </div>
                 </div>
-              </div>
-
-              <div class="flex w-full">
-                <div class="flex-col w-full px-2">
-                  <label class="px-1 text-xs text-gray-500">Categoria</label>
-                  <select
-                    style="height: 90%"
-                    class="w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 my-0 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
-                    id="formFieldCategories"
-                    size="15"
-                    multiple
-                  ></select>
-                </div>
-              </div>
-            </div>
-            <div class="flex flex-col">
-              <div hidden class="flex-col w-full px-2">
-                <label class="px-1 text-xs text-gray-500">Anotações</label>
-                <textarea
-                  class="w-full resize-none bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white focus:border-gray-500"
-                  id="formFieldNotes"
-                  maxlength="250"
-                  rows="1"
-                  placeholder="Anotações"
-                ></textarea>
-              </div>
-              <div class="flex">
-                <div class="w-1/2 px-2">
+                <div class="w-full px-2">
                   <label class="px-1 text-xs text-gray-500"
                     >Url da oferta</label
                   >
@@ -461,7 +386,6 @@
                             d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zM432 456c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"
                           />
                         </svg>
-                        <!-- <div className="absolute right-0 h-1 w-1"> -->
                         <svg
                           class="hidden absolute h-7 w-7 animate-spin fill-fuchsia-800 opacity-40"
                           id="loadingIcon"
@@ -472,20 +396,111 @@
                             d="M222.7 32.1c5 16.9-4.6 34.8-21.5 39.8C121.8 95.6 64 169.1 64 256c0 106 86 192 192 192s192-86 192-192c0-86.9-57.8-160.4-137.1-184.1c-16.9-5-26.6-22.9-21.5-39.8s22.9-26.6 39.8-21.5C434.9 42.1 512 140 512 256c0 141.4-114.6 256-256 256S0 397.4 0 256C0 140 77.1 42.1 182.9 10.6c16.9-5 34.8 4.6 39.8 21.5z"
                           />
                         </svg>
-                        <!-- </div> -->
                       </div>
                     </button>
                   </div>
                 </div>
-                <div class="w-1/2 px-2">
-                  <label
-                    id="formFieldLabelImage"
-                    class="px-1 text-xs text-gray-500"
-                    >Imagem</label
+              </div>
+
+              <!-- col2 -->
+              <div class="flex flex-col w-full justify-between">
+                <div class="flex-col w-full px-2">
+                  <label class="px-1 text-xs text-gray-500">Categoria</label>
+                  <select
+                    style="height: 90%"
+                    class="w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 my-0 px-2 rounded leading-tight focus:bg-white focus:border-gray-500"
+                    id="formFieldCategories"
+                    size="9"
+                    multiple
+                  ></select>
+                </div>
+                <div
+                  class="flex w-[97%] border border-gray-300 self-center px-10 rounded justify-center bg-gray-200"
+                >
+                  <div
+                    class="relative flex self-center justify-center items-center align-middle h-[295px] w-[500px]"
                   >
+                    <img
+                      id="backgroundImage"
+                      class="h-full object-contain border-2 rounded"
+                      src=""
+                    />
+                    <div
+                      class="absolute top-0 bottom-0 h-[90%] w-[75%] pt-2 flex justify-center"
+                    >
+                      <img
+                        id="productImage"
+                        class="h-full object-contain"
+                        src=""
+                      />
+                    </div>
+                    <button
+                      id="btnChangeBackground"
+                      class="absolute -right-10 bottom-1.5 rounded bg-white px-2 py-1 shadow hover:bg-cyan-50"
+                    >
+                      <div
+                        class="relative m-0 h-full w-full flex items-center justify-center p-0 align-middle"
+                      >
+                        <svg
+                          class="h-5 w-5 fill-cyan-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512"
+                        >
+                          <path
+                            d="M32 96l320 0V32c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l96 96c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-96 96c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160L32 160c-17.7 0-32-14.3-32-32s14.3-32 32-32zM480 352c17.7 0 32 14.3 32 32s-14.3 32-32 32H160v64c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-96-96c-6-6-9.4-14.1-9.4-22.6s3.4-16.6 9.4-22.6l96-96c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 64H480z"
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+                <div class="w-full px-2">
+                  <div class="flex w-full justify-between">
+                    <label
+                      id="formFieldLabelImage"
+                      class="px-1 text-xs text-gray-500"
+                      >Imagem</label
+                    >
+                    <div class="flex pb-1">
+                      <input id="checkImageFile" type="checkbox" />
+                      <label
+                        id="formFieldLabelImage"
+                        class="px-1 text-xs text-gray-500"
+                        for="checkImageFile"
+                        >Arquivo</label
+                      >
+                    </div>
+                  </div>
+                  <div class="relative flex items-center">
+                    <input
+                      class="appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-2 px-2 mb-2 leading-tight focus:bg-white"
+                      id="formFieldInputImage"
+                      type="url"
+                      accept="image/jpeg, image/png, image/webp"
+                      placeholder="Url da imagem"
+                    />
+                    <button
+                      id="btnChangeImage"
+                      class="hidden absolute top-1 bottom-3 right-0.5 rounded bg-white px-2 py-1 shadow hover:bg-cyan-50"
+                    >
+                      <div
+                        class="relative m-0 h-full w-full flex items-center justify-center p-0 align-middle"
+                      >
+                        <svg
+                          class="h-5 w-5 fill-cyan-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512"
+                        >
+                          <path
+                            d="M32 96l320 0V32c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l96 96c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-96 96c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160L32 160c-17.7 0-32-14.3-32-32s14.3-32 32-32zM480 352c17.7 0 32 14.3 32 32s-14.3 32-32 32H160v64c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-96-96c-6-6-9.4-14.1-9.4-22.6s3.4-16.6 9.4-22.6l96-96c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 64H480z"
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
                   <input
-                    class="w-full text-sm rounded-lg border cursor-pointer bg-gray-100 border-gray-300 text-gray-700 py-2 px-2 mb-2 leading-tight focus:bg-white"
-                    id="formFieldInputImage"
+                    class="hidden appearance-none block w-full bg-gray-100 border-gray-300 text-gray-700 border rounded py-1.5 px-2 mb-2 leading-tight focus:bg-white"
+                    id="formFieldInputImageFile"
                     type="file"
                     accept="image/jpeg, image/png, image/webp"
                   />
@@ -495,7 +510,9 @@
 
             <hr class="mb-2" />
 
-            <div class="flex justify-evenly">
+            <!-- form buttons -->
+
+            <div class="flex justify-evenly h-[6%]">
               <button
                 id="btnCancelOffer"
                 type="button"
@@ -513,6 +530,7 @@
             </div>
           </form>
         </div>
+
         <div
           id="modalRemoveConfirmation"
           class="hidden fixed items-center justify-center z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[30%] w-[50%] bg-white rounded-md p-3"

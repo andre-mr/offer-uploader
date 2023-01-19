@@ -44,8 +44,7 @@ async function scrapAmazonProduct(amazonUrl) {
     const title = await getTitle(resultText);
     const descriptions = await getDescriptions(resultText);
     const price = await getPrice(resultText);
-    // const oldPrice = await getOldPrice(resultText);
-    // const imageUrls = await getImages(resultText);
+    const imageUrls = await getImages(resultText);
 
     // fs.writeFile("page.html", resultText, (err) => {}); // used to analyze html to define scraping method
 
@@ -53,8 +52,7 @@ async function scrapAmazonProduct(amazonUrl) {
       title: title,
       descriptions: descriptions,
       price: price,
-      // oldPrice: oldPrice,
-      // imageUrls: imageUrls,
+      imageUrls: imageUrls,
     };
   } else {
     return null;
@@ -93,7 +91,6 @@ async function getPrice(page) {
 }
 
 async function getDescriptions(page) {
-  // fs.writeFile("page.html", page, (err) => {}); // to analyse html in order to update scraping rules
   const descriptions = [];
 
   const desc1 = page.match(/(?<=id="productDescription" )(.*)(?=<\/span)/s);
@@ -127,6 +124,42 @@ async function getDescriptions(page) {
     descriptions.push(about);
   }
   return descriptions;
+}
+
+async function getImages(page) {
+  let images = [];
+
+  let img1 = page.match(/(?<='colorImages': { 'initial': )(.*?)(?<=\}\])/);
+  if (!img1) {
+    img1 = page.match(/(?<=data-a-dynamic-image=")(.*?)(?=")/);
+    if (img1) {
+      img1 = img1[0].match(/(?=https:)(.*?)(?<=.jpg)/g);
+      if (img1) {
+        for (let i = 0; i < img1.length; i++) {
+          images.push(img1[i]);
+        }
+      }
+    }
+  } else {
+    const imgOBJ = img1 ? JSON.parse(img1[0]) : null;
+
+    if (imgOBJ) {
+      images.push(imgOBJ[0].hiRes ? imgOBJ[0].hiRes : imgOBJ[0].large);
+      for (let i = 0; i < imgOBJ.length; i++) {
+        let repeated = false;
+        for (let j = 0; j < images.length; j++) {
+          if (imgOBJ[i].hiRes == images[j]) {
+            repeated = true;
+            break;
+          }
+        }
+        if (!repeated) {
+          images.push(imgOBJ[i].hiRes ? imgOBJ[i].hiRes : imgOBJ[i].large);
+        }
+      }
+    }
+  }
+  return images;
 }
 
 module.exports = { scrapAmazonProduct };
