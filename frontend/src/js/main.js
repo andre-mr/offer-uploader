@@ -1,5 +1,9 @@
 import "/css/style.css";
 
+const urlDomain = "http://localhost:3000";
+const urlImagesDomain = "https://ibb.co";
+const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
+
 const appContainer = document.getElementById("appContainer");
 const loginArea = document.getElementById("loginArea");
 const loginText = document.getElementById("loginText");
@@ -60,14 +64,12 @@ const productImage = document.getElementById("productImage");
 const formFieldInputImage = document.getElementById("formFieldInputImage");
 const checkImageFile = document.getElementById("checkImageFile");
 
-const urlDomain = "http://localhost:3000";
-const urlImagesDomain = "https://ibb.co";
-const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
+const btnCopyOffer = document.getElementById("btnCopyOffer");
 
 let imageFile,
   selectedOfferId,
   apiKey,
-  configs = { stores: null, categories: null },
+  configs = { stores: null, categories: null, clipboard: null },
   amazonProduct,
   amazonDescriptionIndex = 0,
   amazonImageIndex = 0,
@@ -78,9 +80,7 @@ let imageFile,
   pendingOffers = [];
 
 const amazonRecurrencyDescription = `✔️ Selecione "comprar com recorrência"
-✔️ Confira o desconto na tela de pagamento
-
-`;
+✔️ Confira o desconto na tela de pagamento`;
 
 // modalDialog.addEventListener("keyup", escapeFromModalDialog);
 btnAddOffer.addEventListener("click", addOfferForm);
@@ -112,6 +112,9 @@ btnChangeBackground.addEventListener("click", changeBackground);
 formFieldStore.addEventListener("change", clearAmazonData);
 formFieldInputImage.addEventListener("input", changeImage);
 checkImageFile.addEventListener("change", changeImageMethod);
+
+// clipboard copy
+btnCopyOffer.addEventListener("click", copyOfferToClipboard);
 
 function startUp() {
   apiKey = localStorage.getItem("APIKEY");
@@ -158,6 +161,7 @@ async function getConfigs() {
 function populateConfigs(data) {
   configs.stores = data.stores;
   configs.categories = data.categories;
+  configs.clipboard = data.clipboard;
 
   formFieldStore.innerHTML = `<option hidden>Loja</option>`;
   for (const store of configs.stores) {
@@ -845,7 +849,7 @@ function createTableEmpty() {
   cellEditButton.className =
     "text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800";
   cellEditButton.innerHTML = "Não há resultados para exibir";
-  cellEditButton.colSpan = "6";
+  cellEditButton.colSpan = "7";
   row.appendChild(cellEditButton);
 
   tableBody.appendChild(row);
@@ -989,8 +993,9 @@ async function fillFormAmazon() {
       minimumFractionDigits: 2,
     });
   formFieldDescription.value = amazonProduct.price.sns
-    ? amazonRecurrencyDescription +
-      amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)
+    ? `${amazonRecurrencyDescription}
+
+${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
     : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
   formFieldInputImage.value =
     amazonProduct.imageUrls &&
@@ -1015,8 +1020,9 @@ function changeDescription(e) {
       amazonDescriptionIndex = 1;
     }
     formFieldDescription.value = amazonProduct.price.sns
-      ? amazonRecurrencyDescription +
-        amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)
+      ? `${amazonRecurrencyDescription}
+
+${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
       : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
   }
 }
@@ -1096,6 +1102,41 @@ function clearAmazonData(e) {
   !formFieldInputImageFile.classList.contains("hidden")
     ? formFieldInputImageFile.classList.add("hidden")
     : null;
+}
+
+async function copyOfferToClipboard() {
+  if (!btnAddOffer.classList.contains("animate-pulse"))
+    btnCopyOffer.classList.add("animate-pulse");
+  setTimeout(() => {
+    btnCopyOffer.classList.remove("animate-pulse");
+  }, 1000);
+
+  const clipboardText1 = configs.clipboard[0].content
+    ? `${configs.clipboard[0].content}
+
+`
+    : "";
+
+  const clipboardText2 = `*${formFieldTitle.value}*
+>>>>>> ${formFieldBadge.value} <<<<<<
+
+${formFieldUrl.value}
+`;
+  const clipboardText3 =
+    amazonProduct && amazonProduct.price.sns
+      ? `
+${amazonRecurrencyDescription}
+`
+      : "";
+  const clipboardText4 = configs.clipboard[1].content
+    ? `
+${configs.clipboard[1].content}
+`
+    : "";
+
+  const clipboardText = `${clipboardText1}${clipboardText2}${clipboardText3}${clipboardText4}`;
+
+  navigator.clipboard.writeText(clipboardText);
 }
 
 startUp();

@@ -6,12 +6,14 @@ const sharp = require("sharp");
 const unshorter = require("unshorter");
 
 async function getConfigs() {
-  const configs = { stores: null, categories: null };
+  const configs = { stores: null, categories: null, clipboard: null };
   try {
     const stores = await offerDb.getStores();
     configs.stores = stores;
     const categories = await offerDb.getCategories();
     configs.categories = categories;
+    const clipboard = await offerDb.getClipboard();
+    configs.clipboard = clipboard;
     return configs;
   } catch (error) {
     return false;
@@ -21,6 +23,14 @@ async function getConfigs() {
 async function updateSignature(signature) {
   try {
     return await offerDb.updateSignature(signature);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function updateClipboard(clipboard) {
+  try {
+    return await offerDb.updateClipboard(clipboard);
   } catch (error) {
     throw new Error(error.message);
   }
@@ -50,6 +60,14 @@ async function deleteStore(store) {
   }
 }
 
+async function deleteClipboard(clipboard) {
+  try {
+    return await offerDb.deleteClipboard(clipboard);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 async function addSignature(signature) {
   try {
     return await offerDb.addSignature(signature);
@@ -71,6 +89,15 @@ async function addCategory(category) {
 async function addStore(store) {
   try {
     return await offerDb.addStore(store);
+  } catch (error) {
+    return false;
+    throw new Error(error.message);
+  }
+}
+
+async function addClipboard(clipboard) {
+  try {
+    return await offerDb.addClipboard(clipboard);
   } catch (error) {
     return false;
     throw new Error(error.message);
@@ -131,6 +158,14 @@ async function getUploadedOfferList() {
 async function getActiveOfferList() {
   try {
     return await offerDb.getActiveOfferList();
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getClipboard() {
+  try {
+    return await offerDb.getClipboard();
   } catch (error) {
     return false;
   }
@@ -355,4 +390,8 @@ module.exports = {
   getConfigs,
   getInactiveOfferList,
   updateSignature,
+  addClipboard,
+  updateClipboard,
+  deleteClipboard,
+  getClipboard,
 };

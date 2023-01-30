@@ -1,5 +1,11 @@
 const mysql = require("mysql2/promise.js");
 
+async function updateClipboard(clipboard) {
+  let sql = `UPDATE clipboard SET content=? WHERE id=? `;
+  let values = [clipboard.content, clipboard.id];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
 async function updateSignature(signature) {
   let sql = `UPDATE signature SET description=?, date=? WHERE id=? `;
   let values = [signature.description, signature.date, signature.id];
@@ -24,32 +30,35 @@ async function deleteStore(store) {
   return await sqlUpdateOrDelete(sql, values);
 }
 
+async function deleteClipboard(clipboard) {
+  let sql = `DELETE FROM clipboard WHERE id=? `;
+  let values = [clipboard.id];
+  return await sqlUpdateOrDelete(sql, values);
+}
+
 async function addSignature(signature) {
   return await sqlInsert(
     `INSERT INTO signature (description, date) VALUES (?) `,
-    [
-      signature.description,
-      signature.date
-    ]
+    [signature.description, signature.date]
   );
 }
 
 async function addCategory(category) {
-  return await sqlInsert(
-    `INSERT INTO category (description) VALUES (?) `,
-    [
-      category.description,
-    ]
-  );
+  return await sqlInsert(`INSERT INTO category (description) VALUES (?) `, [
+    category.description,
+  ]);
 }
 
 async function addStore(store) {
-  return await sqlInsert(
-    `INSERT INTO store (description) VALUES (?) `,
-    [
-      store.description,
-    ]
-  );
+  return await sqlInsert(`INSERT INTO store (description) VALUES (?) `, [
+    store.description,
+  ]);
+}
+
+async function addClipboard(clipboard) {
+  return await sqlInsert(`INSERT INTO clipboard (content) VALUES (?) `, [
+    clipboard.content,
+  ]);
 }
 
 async function getSignatures() {
@@ -73,7 +82,15 @@ async function getStores() {
     `SELECT * 
     FROM store 
     ORDER BY description ASC;`
-  )
+  );
+}
+
+async function getClipboard() {
+  return sqlSelect(
+    `SELECT * 
+    FROM clipboard 
+    ORDER BY id ASC;`
+  );
 }
 
 async function getInactiveOfferList() {
@@ -111,7 +128,7 @@ async function addOffer(offer) {
       offer.verified_on,
       offer.priority,
       offer.notes,
-      offer.image_file
+      offer.image_file,
     ]
   );
 }
@@ -135,7 +152,7 @@ async function updateOffer(offer) {
     offer.priority,
     offer.notes,
     offer.image_file,
-    offer.id
+    offer.id,
   ];
   return await sqlUpdateOrDelete(sql, values);
 }
@@ -154,7 +171,7 @@ async function updateActiveOffers(activeOffers) {
       offer.image_url,
       offer.start_date,
       offer.verified_on,
-      offer.id
+      offer.id,
     ];
 
     await connection.query(sql, values, function (err) {
@@ -203,8 +220,7 @@ async function sqlInsert(insertStatement, values) {
     if (err) throw err;
     connection.end();
     return false;
-  }
-  );
+  });
   connection.end();
   return true;
 }
@@ -229,19 +245,23 @@ async function sqlUpdateOrDelete(updateStatement, values) {
 
 module.exports = {
   getActiveOfferList,
-  addOffer,
-  updateOffer,
-  deleteOffer,
-  updateActiveOffers,
+  getInactiveOfferList,
   getStores,
   getCategories,
   getSignatures,
+  getClipboard,
+  addOffer,
   addStore,
-  deleteStore,
   addCategory,
-  deleteCategory,
   addSignature,
-  deleteSignature,
-  getInactiveOfferList,
+  addClipboard,
+  updateActiveOffers,
+  updateOffer,
   updateSignature,
+  updateClipboard,
+  deleteOffer,
+  deleteStore,
+  deleteCategory,
+  deleteSignature,
+  deleteClipboard,
 };

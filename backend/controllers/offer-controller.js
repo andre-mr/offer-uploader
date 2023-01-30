@@ -28,6 +28,15 @@ async function updateSignature(req, res) {
   }
 }
 
+async function updateClipboard(req, res) {
+  let result = await offerService.updateClipboard(req.body);
+  if (result) {
+    sendResponse(result, res);
+  } else {
+    sendResponse(null, res);
+  }
+}
+
 async function deleteSignature(req, res) {
   let result = await offerService.deleteSignature(req.body);
   if (result) {
@@ -55,6 +64,15 @@ async function deleteStore(req, res) {
   }
 }
 
+async function deleteClipboard(req, res) {
+  let result = await offerService.deleteClipboard(req.body);
+  if (result) {
+    sendResponse(result, res);
+  } else {
+    sendResponse(null, res);
+  }
+}
+
 async function addSignature(req, res) {
   let result = await offerService.addSignature(req.body);
   if (result) {
@@ -75,6 +93,15 @@ async function addCategory(req, res) {
 
 async function addStore(req, res) {
   let result = await offerService.addStore(req.body);
+  if (result) {
+    sendResponse(result, res);
+  } else {
+    sendResponse(null, res);
+  }
+}
+
+async function addClipboard(req, res) {
+  let result = await offerService.addClipboard(req.body);
   if (result) {
     sendResponse(result, res);
   } else {
@@ -128,13 +155,22 @@ async function getUploadedOfferList(req, res) {
     sendResponse(null, res);
   }
 
-  // process.kill(process.pid); // clear cpanel node multiple NPROC usage
+  process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getActiveOfferList(req, res) {
   let result = await offerService.getActiveOfferList();
   if (result) {
     sendResponse(result, res);
+  } else {
+    sendResponse(null, res);
+  }
+}
+
+async function getClipboard(req, res) {
+  let result = await offerService.getClipboard();
+  if (result) {
+    sendResponse(JSON.stringify(result), res);
   } else {
     sendResponse(null, res);
   }
@@ -210,4 +246,8 @@ module.exports = {
   getInactiveOfferList,
   updateSignature,
   getAmazonProduct,
+  getClipboard,
+  addClipboard,
+  updateClipboard,
+  deleteClipboard,
 };

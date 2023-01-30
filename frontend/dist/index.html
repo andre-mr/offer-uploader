@@ -12,8 +12,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>Gerador de Uploads</title>
-    <script type="module" crossorigin src="/assets/index.8beb9728.js"></script>
-    <link rel="stylesheet" href="/assets/index.a2d93a06.css">
+    <script type="module" crossorigin src="/assets/index.b49fa41d.js"></script>
+    <link rel="stylesheet" href="/assets/index.5322afb2.css">
   </head>
 
   <body>
@@ -86,13 +86,6 @@
                     TÍTULO
                   </th>
                   <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    DESCRIÇÃO
-                  </th>
-                  <th
                     scope="col"
                     class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
                   >
@@ -105,13 +98,6 @@
                     TIPO
                   </th>
                   <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    CÓDIGO
-                  </th>
-                  <th
                     scope="col"
                     class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
                   >
@@ -122,62 +108,6 @@
                     class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
                   >
                     CATEGORIA
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    LOCALIDADES
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    URL
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    URL DA IMAGEM
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    DATA DE INÍCIO
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    VÁLIDO ATÉ
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    VERIFICADO EM
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    PRIORIDADE
-                  </th>
-                  <th
-                    hidden
-                    scope="col"
-                    class="text-sm font-bold text-gray-800 px-6 py-4 text-left"
-                  >
-                    NOTAS
                   </th>
                   <th
                     scope="col"
@@ -514,13 +444,20 @@
 
             <!-- form buttons -->
 
-            <div class="flex justify-evenly h-[6%]">
+            <div class="flex justify-center h-[6%]">
               <button
                 id="btnCancelOffer"
                 type="button"
                 class="px-5 py-2 w-1/6 bg-gray-500 hover:bg-gray-700 text-white drop-shadow-md cursor-pointer rounded-lg"
               >
                 Cancelar
+              </button>
+              <button
+                id="btnCopyOffer"
+                type="button"
+                class="mx-20 px-5 py-2 w-1/6 bg-amber-600 hover:bg-amber-700 text-white drop-shadow-md cursor-pointer rounded-lg"
+              >
+                Copiar
               </button>
               <button
                 id="btnSaveOffer"
