@@ -79,9 +79,6 @@ let imageFile,
     `background-${imageBackgroundId.toString().padStart(2, "0")}.png`,
   pendingOffers = [];
 
-const amazonRecurrencyDescription = `✔️ Selecione "comprar com recorrência"
-✔️ Confira o desconto na tela de pagamento`;
-
 // modalDialog.addEventListener("keyup", escapeFromModalDialog);
 btnAddOffer.addEventListener("click", addOfferForm);
 formFieldInputImageFile.addEventListener("change", handleFile);
@@ -993,7 +990,7 @@ async function fillFormAmazon() {
       minimumFractionDigits: 2,
     });
   formFieldDescription.value = amazonProduct.price.sns
-    ? `${amazonRecurrencyDescription}
+    ? `${configs.clipboard[1].content}
 
 ${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
     : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
@@ -1020,7 +1017,7 @@ function changeDescription(e) {
       amazonDescriptionIndex = 1;
     }
     formFieldDescription.value = amazonProduct.price.sns
-      ? `${amazonRecurrencyDescription}
+      ? `${configs.clipboard[1].content}
 
 ${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
       : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
@@ -1125,12 +1122,12 @@ ${formFieldUrl.value}
   const clipboardText3 =
     amazonProduct && amazonProduct.price.sns
       ? `
-${amazonRecurrencyDescription}
+${configs.clipboard[1].content}
 `
       : "";
-  const clipboardText4 = configs.clipboard[1].content
+  const clipboardText4 = configs.clipboard[2].content
     ? `
-${configs.clipboard[1].content}
+${configs.clipboard[2].content}
 `
     : "";
 
