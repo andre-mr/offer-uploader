@@ -1,6 +1,17 @@
 const offerService = require("../services/offer-service.js");
 const scrapAmazon = require("../services/scrap-amazon.js");
 
+async function fuseImage(req, res) {
+  let result = await offerService.fuseImage(req.body);
+  if (result) {
+    sendResponse(result, res);
+  } else {
+    sendResponse(null, res);
+  }
+
+  process.kill(process.pid); // clear cpanel node multiple NPROC usage
+}
+
 async function getAmazonProduct(req, res) {
   let result = await scrapAmazon.scrapAmazonProduct(req.query.url);
   if (result) {
@@ -250,4 +261,5 @@ module.exports = {
   addClipboard,
   updateClipboard,
   deleteClipboard,
+  fuseImage,
 };

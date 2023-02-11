@@ -59,6 +59,10 @@ function setupRoutes(app) {
 
   app.get("/amazonproduct", offerController.getAmazonProduct);
 
+  app.get("/amazonproduct", offerController.getAmazonProduct);
+
+  app.post("/image", offerController.fuseImage);
+  
   app.get("*", function (req, res) {
     res.statusCode = 404;
     res.setHeader("Content-Type", "text/plain; charset=utf-8");

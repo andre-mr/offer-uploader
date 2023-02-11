@@ -63,6 +63,7 @@ const backgroundImage = document.getElementById("backgroundImage");
 const productImage = document.getElementById("productImage");
 const formFieldInputImage = document.getElementById("formFieldInputImage");
 const checkImageFile = document.getElementById("checkImageFile");
+const imageArea = document.getElementById("imageArea");
 
 const btnCopyOffer = document.getElementById("btnCopyOffer");
 
@@ -73,12 +74,11 @@ let imageFile,
   amazonProduct,
   amazonDescriptionIndex = 0,
   amazonImageIndex = 0,
-  imageBackgroundId = 1,
+  imageBackgroundId = 0,
   imageBackground =
     imageBackgroundUrl +
     `background-${imageBackgroundId.toString().padStart(2, "0")}.png`,
   pendingOffers = [];
-
 // modalDialog.addEventListener("keyup", escapeFromModalDialog);
 btnAddOffer.addEventListener("click", addOfferForm);
 formFieldInputImageFile.addEventListener("change", handleFile);
@@ -112,6 +112,7 @@ checkImageFile.addEventListener("change", changeImageMethod);
 
 // clipboard copy
 btnCopyOffer.addEventListener("click", copyOfferToClipboard);
+imageArea.addEventListener("click", downloadImage);
 
 function startUp() {
   apiKey = localStorage.getItem("APIKEY");
@@ -261,6 +262,9 @@ function hideModalDialog(e) {
   hideModalRemoveConfirmation();
   hideModalCloseBatchConfirmation();
   clearAmazonData("clear");
+  imageBackgroundId = 0;
+  changeBackground();
+  imageArea.classList.remove("cursor-pointer");
 }
 
 function showModalRemoveConfirmation() {
@@ -1002,6 +1006,10 @@ ${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
       : "";
   imageFile = null;
   productImage.src = formFieldInputImage.value;
+  if (formFieldInputImage.value) {
+    if (!imageArea.classList.contains("cursor-pointer"))
+      imageArea.classList.add("cursor-pointer");
+  }
 }
 
 function changeDescription(e) {
@@ -1044,13 +1052,20 @@ function changeImage(e) {
   productImage.src = formFieldInputImage.value;
   formFieldLabelImage.textContent = "Imagem";
   formFieldLabelImage.classList.remove("font-bold");
+
+  if (formFieldInputImage.value) {
+    if (!imageArea.classList.contains("cursor-pointer"))
+      imageArea.classList.add("cursor-pointer");
+  } else {
+    imageArea.classList.remove("cursor-pointer");
+  }
 }
 
 function changeBackground(e) {
   if (e) {
     e.preventDefault();
   }
-  if (imageBackgroundId >= 4) {
+  if (imageBackgroundId >= 2) {
     imageBackgroundId = 1;
   } else {
     imageBackgroundId++;
@@ -1134,6 +1149,90 @@ ${configs.clipboard[2].content}
   const clipboardText = `${clipboardText1}${clipboardText2}${clipboardText3}${clipboardText4}`;
 
   navigator.clipboard.writeText(clipboardText);
+}
+
+async function downloadImage(e) {
+  e.stopPropagation();
+  const loadingIconDownloadImage = document.getElementById(
+    "loadingIconDownloadImage"
+  );
+  if (
+    productImage.src.indexOf(".png") >= 0 ||
+    productImage.src.indexOf(".jpg") >= 0
+  ) {
+    loadingIconDownloadImage.classList.contains("hidden")
+      ? loadingIconDownloadImage.classList.remove("hidden")
+      : null;
+    const a = document.createElement("a");
+    a.href = await fuseImage();
+    const today = new Date();
+    a.download = `${today.getFullYear().toString()}${(today.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}${today.getDate().toString().padStart(2, "0")}-${today
+      .getHours()
+      .toString()
+      .padStart(2, "0")}${today
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}-${SanitizeURL(formFieldTitle.value)}.png`;
+    !loadingIconDownloadImage.classList.contains("hidden")
+      ? loadingIconDownloadImage.classList.add("hidden")
+      : null;
+    a.click();
+  }
+}
+
+function fuseImage() {
+  const defaultHeader = new Headers();
+  defaultHeader.append("Content-Type", "application/json");
+  const requestJSON = JSON.stringify({
+    background: backgroundImage.src,
+    foreground: productImage.src,
+  });
+  const query = "image";
+  let requestOptions = {
+    method: "POST",
+    headers: defaultHeader,
+    body: requestJSON,
+    redirect: "follow",
+  };
+  return fetch(`${urlDomain}/${query}?apiKey=${apiKey}`, requestOptions)
+    .then(async function (data) {
+      if (data.length > 0 && data[0] == "password") {
+        loginText.innerHTML = "Senha inválida!";
+        loginText.classList.add("text-red-500");
+        inputLoginPassword.value = "";
+        logout();
+        showLogin(true);
+        return false;
+      }
+      return await data.json();
+    })
+    .catch(function (err) {
+      console.log("Something went wrong!", err);
+      formWarningShow();
+    });
+  return null;
+}
+
+function SanitizeURL(url) {
+  let sanitizedURL = url ? url : "";
+  const comAcentos = "ÄÅÁÂÀÃäáâàãÉÊËÈéêëèÍÎÏÌíîïìÖÓÔÒÕöóôòõÜÚÛüúûùÇç";
+  const semAcentos = "AAAAAAaaaaaEEEEeeeeIIIIiiiiOOOOOoooooUUUuuuuCc";
+
+  for (let i = 0; i < comAcentos.length; i++) {
+    sanitizedURL = sanitizedURL.replaceAll(
+      comAcentos[i].toString(),
+      semAcentos[i].toString()
+    );
+  }
+
+  sanitizedURL = sanitizedURL
+    .replace(/[^a-zA-Z0-9 ]/g, "")
+    .replace(/ /g, "-")
+    .toLowerCase();
+
+  return sanitizedURL;
 }
 
 startUp();

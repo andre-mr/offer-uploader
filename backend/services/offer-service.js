@@ -5,6 +5,15 @@ const { Readable } = require("stream");
 const sharp = require("sharp");
 const unshorter = require("unshorter");
 
+async function fuseImage(urls) {
+  try {
+    return await generateFusedImage(urls);
+  } catch (error) {
+    return false;
+    throw new Error(error.message);
+  }
+}
+
 async function getConfigs() {
   const configs = { stores: null, categories: null, clipboard: null };
   try {
@@ -188,6 +197,10 @@ async function validateOfferImage(offer) {
       offer.imageUrl
     );
   }
+}
+
+async function generateFusedImage(urls) {
+  return await imageGenerator.generateImage(urls.background, urls.foreground);
 }
 
 async function extraDescription(description) {
@@ -394,4 +407,5 @@ module.exports = {
   updateClipboard,
   deleteClipboard,
   getClipboard,
+  fuseImage,
 };
