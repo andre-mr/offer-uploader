@@ -21,7 +21,7 @@ async function getStoreProduct(req, res) {
     result = await scrapAmazon.scrapAmazonProduct(url);
   } else {
     if (url.indexOf("bit.ly")) {
-      url = (await unshorter(url)).replaceAll(" ","%20");
+      url = (await unshorter(url)).replace(/ /g,"%20");
     }
     if (url.indexOf("natura.com.br") >= 0) {
       result = await scrapNatura.scrapNaturaProduct(url);
