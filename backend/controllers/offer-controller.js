@@ -1,5 +1,7 @@
+const unshorter = require("unshorter");
 const offerService = require("../services/offer-service.js");
 const scrapAmazon = require("../services/scrap-amazon.js");
+const scrapNatura = require("../services/scrap-natura.js");
 
 async function fuseImage(req, res) {
   let result = await offerService.fuseImage(req.body);
@@ -12,13 +14,26 @@ async function fuseImage(req, res) {
   process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
-async function getAmazonProduct(req, res) {
-  let result = await scrapAmazon.scrapAmazonProduct(req.query.url);
+async function getStoreProduct(req, res) {
+  let url = req.query.url;
+  let result;
+  if (url.indexOf("amzn.to") >= 0 || url.indexOf("amazon.com") >= 0) {
+    result = await scrapAmazon.scrapAmazonProduct(url);
+  } else {
+    if (url.indexOf("bit.ly")) {
+      url = (await unshorter(url)).replaceAll(" ","%20");
+    }
+    if (url.indexOf("natura.com.br") >= 0) {
+      result = await scrapNatura.scrapNaturaProduct(url);
+    }
+  }
   if (result) {
     sendResponse(JSON.stringify(result), res);
   } else {
     sendResponse(null, res);
   }
+
+  process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getConfigs(req, res) {
@@ -256,10 +271,10 @@ module.exports = {
   getConfigs,
   getInactiveOfferList,
   updateSignature,
-  getAmazonProduct,
   getClipboard,
   addClipboard,
   updateClipboard,
   deleteClipboard,
   fuseImage,
+  getStoreProduct,
 };

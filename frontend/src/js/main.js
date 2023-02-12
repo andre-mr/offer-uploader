@@ -53,7 +53,7 @@ const btnCancelCloseBatch = document.getElementById("btnCancelCloseBatch");
 const btnConfirmCloseBatch = document.getElementById("btnConfirmCloseBatch");
 const formFieldLabelImage = document.getElementById("formFieldLabelImage");
 const formHeaderTitle = document.getElementById("formHeaderTitle");
-const btnFillAmazon = document.getElementById("btnFillAmazon");
+const btnScrap = document.getElementById("btnScrap");
 const btnChangeDescription = document.getElementById("btnChangeDescription");
 const btnChangeImage = document.getElementById("btnChangeImage");
 const btnChangeBackground = document.getElementById("btnChangeBackground");
@@ -70,10 +70,11 @@ const btnCopyOffer = document.getElementById("btnCopyOffer");
 let imageFile,
   selectedOfferId,
   apiKey,
-  configs = { stores: null, categories: null, clipboard: null },
-  amazonProduct,
-  amazonDescriptionIndex = 0,
-  amazonImageIndex = 0,
+  configs = { stores: null, categories: null, clipboards: null },
+  clipboard,
+  scrapedProduct,
+  scrapedDescriptionIndex = 0,
+  scrapedImageIndex = 0,
   imageBackgroundId = 0,
   imageBackground =
     imageBackgroundUrl +
@@ -100,13 +101,13 @@ loginButton.addEventListener("click", submitApiKey);
 inputLoginPassword.addEventListener("keyup", submitApiKey);
 btnLogout.addEventListener("click", logout);
 
-// scrap Amazon
-btnFillAmazon.addEventListener("click", getAmazonProduct);
-formFieldUrl.addEventListener("keyup", validateAmazon);
+// scrap
+btnScrap.addEventListener("click", scrapProduct);
+formFieldUrl.addEventListener("input", validateUrl);
 btnChangeDescription.addEventListener("click", changeDescription);
 btnChangeImage.addEventListener("click", changeImage);
 btnChangeBackground.addEventListener("click", changeBackground);
-formFieldStore.addEventListener("change", clearAmazonData);
+formFieldStore.addEventListener("change", clearScrapedData);
 formFieldInputImage.addEventListener("input", changeImage);
 checkImageFile.addEventListener("change", changeImageMethod);
 
@@ -121,7 +122,6 @@ function startUp() {
   } else {
     showLogin(true);
   }
-  // showModalDialog(); // testing...
   changeBackground();
 }
 
@@ -159,7 +159,8 @@ async function getConfigs() {
 function populateConfigs(data) {
   configs.stores = data.stores;
   configs.categories = data.categories;
-  configs.clipboard = data.clipboard;
+  configs.clipboards = data.clipboards;
+  clipboard = configs.clipboards[0];
 
   formFieldStore.innerHTML = `<option hidden>Loja</option>`;
   for (const store of configs.stores) {
@@ -261,10 +262,11 @@ function hideModalDialog(e) {
   formFieldLabelImage.textContent = "Imagem";
   hideModalRemoveConfirmation();
   hideModalCloseBatchConfirmation();
-  clearAmazonData("clear");
+  clearScrapedData("clear");
   imageBackgroundId = 0;
   changeBackground();
   imageArea.classList.remove("cursor-pointer");
+  clipboard = configs.clipboards[0];
 }
 
 function showModalRemoveConfirmation() {
@@ -403,9 +405,9 @@ function saveOffer(e) {
     : null;
   selectedOffer.imageUrl =
     !checkImageFile.checked &&
-    amazonProduct.imageUrls &&
-    amazonProduct.imageUrls.length > 0
-      ? amazonProduct.imageUrls[amazonImageIndex]
+    scrapedProduct.imageUrls &&
+    scrapedProduct.imageUrls.length > 0
+      ? scrapedProduct.imageUrls[scrapedImageIndex]
       : null;
 
   const defaultHeader = new Headers();
@@ -697,7 +699,7 @@ function editOffer(e) {
       : selectedRowElement.querySelector('[title="code"]').textContent;
   formFieldUrl.value =
     selectedRowElement.querySelector('[title="url"]').textContent;
-  validateAmazon();
+  validateUrl();
   const categories = selectedRowElement
     .querySelector('[title="categories"]')
     .textContent.replace(/"/g, "")
@@ -903,69 +905,93 @@ function handleFile(e) {
   }
 }
 
-function validateAmazon() {
+function validateUrl() {
+  if (
+    formFieldUrl.value.indexOf("https://") >= 0 ||
+    formFieldUrl.value.indexOf("http://") >= 0
+  ) {
+    btnScrap.classList.remove("hidden");
+    return true;
+  } else {
+    if (!btnScrap.classList.contains("hidden")) {
+      btnScrap.classList.add("hidden");
+    }
+    return false;
+  }
+
   if (
     formFieldUrl.value.indexOf("/amzn.") >= 0 ||
     formFieldUrl.value.indexOf("amazon.com") >= 0
   ) {
-    btnFillAmazon.classList.remove("hidden");
+    btnScrap.classList.remove("hidden");
 
     return true;
   } else {
-    if (!btnFillAmazon.classList.contains("hidden")) {
-      btnFillAmazon.classList.add("hidden");
+    if (!btnScrap.classList.contains("hidden")) {
+      btnScrap.classList.add("hidden");
     }
 
     return false;
   }
 }
 
-function getAmazonProduct(e) {
+function scrapProduct(e) {
   e.preventDefault();
-  if (validateAmazon()) {
+
+  if (loadingIcon.classList.contains("hidden"))
     loadingIcon.classList.remove("hidden");
-    fetch(
-      `${urlDomain}/amazonproduct?apiKey=${apiKey}&url=${formFieldUrl.value}`
-    )
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        if (data.length > 0 && data[0] == "password") {
-          loginText.innerHTML = "Senha inválida!";
-          loginText.classList.add("text-red-500");
-          loginField.value = "";
-          logout();
-          showLogin(true);
-          return false;
-        } else {
-          if (data.length > 0) {
-            amazonProduct = JSON.parse(data);
-            fillFormAmazon();
-          }
+
+  fetch(`${urlDomain}/scrapproduct?apiKey=${apiKey}&url=${formFieldUrl.value}`)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      if (data.length > 0 && data[0] == "password") {
+        loginText.innerHTML = "Senha inválida!";
+        loginText.classList.add("text-red-500");
+        loginField.value = "";
+        logout();
+        showLogin(true);
+        return false;
+      } else {
+        if (data.length > 0) {
+          scrapedProduct = JSON.parse(data);
+          fillFormWithScrap(scrapedProduct.store);
         }
-        !loadingIcon.classList.contains("hidden")
-          ? loadingIcon.classList.add("hidden")
-          : null;
-      })
-      .catch(function (err) {
-        headerMessage("Erro no Processamento, tente mais tarde.", true);
-        console.log("Something went wrong!", err);
-        !loadingIcon.classList.contains("hidden")
-          ? loadingIcon.classList.add("hidden")
-          : null;
-      });
-  }
+      }
+      !loadingIcon.classList.contains("hidden")
+        ? loadingIcon.classList.add("hidden")
+        : null;
+    })
+    .catch(function (err) {
+      headerMessage("Erro no Processamento, tente mais tarde.", true);
+      console.log("Something went wrong!", err);
+      !loadingIcon.classList.contains("hidden")
+        ? loadingIcon.classList.add("hidden")
+        : null;
+    });
 }
 
-async function fillFormAmazon() {
-  formFieldStore.selectedIndex = 1;
-  amazonDescriptionIndex = 0;
-  amazonImageIndex = 0;
+async function fillFormWithScrap(store) {
+  for (let i = 1; i < formFieldStore.children.length; i++) {
+    if (formFieldStore.children[i].value == store) {
+      formFieldStore.selectedIndex = i;
+      break;
+    }
+  }
+
+  for (let i = 0; i < configs.clipboards.length; i++) {
+    if (configs.clipboards[i].store == store) {
+      clipboard = configs.clipboards[i];
+    }
+  }
+
+  scrapedDescriptionIndex = 0;
+  scrapedImageIndex = 0;
   if (
-    amazonProduct &&
-    amazonProduct.descriptions &&
-    amazonProduct.descriptions.length > 1
+    scrapedProduct &&
+    scrapedProduct.descriptions &&
+    scrapedProduct.descriptions.length > 1
   ) {
     btnChangeDescription.classList.remove("hidden");
     formFieldDescription.classList.remove("pr-2");
@@ -976,33 +1002,37 @@ async function fillFormAmazon() {
     formFieldDescription.classList.add("pr-2");
   }
   if (
-    amazonProduct &&
-    amazonProduct.imageUrls &&
-    amazonProduct.imageUrls.length > 1 &&
+    scrapedProduct &&
+    scrapedProduct.imageUrls &&
+    scrapedProduct.imageUrls.length > 1 &&
     !checkImageFile.checked
   ) {
     btnChangeImage.classList.remove("hidden");
   } else {
     btnChangeImage.classList.add("hidden");
   }
-  formFieldTitle.value = amazonProduct.title.substring(0, 50);
-  formFieldBadge.value =
-    "R$ " +
-    Number.parseFloat(amazonProduct.price.value).toLocaleString("pt-br", {
-      style: "decimal",
-      minimumIntegerDigits: 1,
-      minimumFractionDigits: 2,
-    });
-  formFieldDescription.value = amazonProduct.price.sns
-    ? `${configs.clipboard[1].content}
+  formFieldTitle.value = scrapedProduct.title.substring(0, 50);
+  if (clipboard.store == "Natura") {
+    formFieldBadge.value = "R$ " + Number.parseInt(scrapedProduct.price.value);
+  } else {
+    formFieldBadge.value =
+      "R$ " +
+      Number.parseFloat(scrapedProduct.price.value).toLocaleString("pt-br", {
+        style: "decimal",
+        minimumIntegerDigits: 1,
+        minimumFractionDigits: 2,
+      });
+  }
+  formFieldDescription.value = scrapedProduct.price.sns
+    ? `${clipboard.text3}
 
-${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
-    : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
+${scrapedProduct.descriptions[scrapedDescriptionIndex].substring(0, 8500)}`
+    : scrapedProduct.descriptions[scrapedDescriptionIndex].substring(0, 8500);
   formFieldInputImage.value =
-    amazonProduct.imageUrls &&
-    amazonProduct.imageUrls.length > 0 &&
+    scrapedProduct.imageUrls &&
+    scrapedProduct.imageUrls.length > 0 &&
     !checkImageFile.checked
-      ? amazonProduct.imageUrls[0]
+      ? scrapedProduct.imageUrls[0]
       : "";
   imageFile = null;
   productImage.src = formFieldInputImage.value;
@@ -1015,20 +1045,20 @@ ${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
 function changeDescription(e) {
   e.preventDefault();
   if (
-    amazonProduct &&
-    amazonProduct.descriptions &&
-    amazonProduct.descriptions.length > 0
+    scrapedProduct &&
+    scrapedProduct.descriptions &&
+    scrapedProduct.descriptions.length > 0
   ) {
-    if (amazonDescriptionIndex > 0) {
-      amazonDescriptionIndex = 0;
+    if (scrapedDescriptionIndex > 0) {
+      scrapedDescriptionIndex = 0;
     } else {
-      amazonDescriptionIndex = 1;
+      scrapedDescriptionIndex = 1;
     }
-    formFieldDescription.value = amazonProduct.price.sns
-      ? `${configs.clipboard[1].content}
+    formFieldDescription.value = scrapedProduct.price.sns
+      ? `${clipboard.text3}
 
-${amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500)}`
-      : amazonProduct.descriptions[amazonDescriptionIndex].substring(0, 8500);
+${scrapedProduct.descriptions[scrapedDescriptionIndex].substring(0, 8500)}`
+      : scrapedProduct.descriptions[scrapedDescriptionIndex].substring(0, 8500);
   }
 }
 
@@ -1036,16 +1066,16 @@ function changeImage(e) {
   if (e.type == "click") {
     e.preventDefault();
     if (
-      amazonProduct &&
-      amazonProduct.imageUrls &&
-      amazonProduct.imageUrls.length > 0
+      scrapedProduct &&
+      scrapedProduct.imageUrls &&
+      scrapedProduct.imageUrls.length > 0
     ) {
-      if (amazonImageIndex >= amazonProduct.imageUrls.length - 1) {
-        amazonImageIndex = 0;
+      if (scrapedImageIndex >= scrapedProduct.imageUrls.length - 1) {
+        scrapedImageIndex = 0;
       } else {
-        amazonImageIndex++;
+        scrapedImageIndex++;
       }
-      formFieldInputImage.value = amazonProduct.imageUrls[amazonImageIndex];
+      formFieldInputImage.value = scrapedProduct.imageUrls[scrapedImageIndex];
     }
   }
   backgroundImage.src = imageBackground;
@@ -1088,7 +1118,7 @@ function changeImageMethod(e) {
     btnChangeBackground.classList.remove("hidden");
     formFieldInputImage.classList.remove("hidden");
     formFieldInputImageFile.classList.add("hidden");
-    if (amazonProduct && amazonProduct.imageUrls) {
+    if (scrapedProduct && scrapedProduct.imageUrls) {
       btnChangeImage.classList.remove("hidden");
     }
     backgroundImage.src = imageBackground;
@@ -1096,18 +1126,19 @@ function changeImageMethod(e) {
   }
 }
 
-function clearAmazonData(e) {
+function clearScrapedData(e) {
   if (
     (e.target && e.target.options[e.target.selectedIndex].value != "Amazon") ||
+    (e.target && e.target.options[e.target.selectedIndex].value != "Natura") ||
     e == "clear"
   ) {
-    amazonProduct = null;
-    amazonDescriptionIndex = 0;
+    scrapedProduct = null;
+    scrapedDescriptionIndex = 0;
 
     btnChangeDescription.classList.add("hidden");
     formFieldDescription.classList.remove("pr-10");
     formFieldDescription.classList.add("pr-2");
-    btnFillAmazon.classList.add("hidden");
+    btnScrap.classList.add("hidden");
     btnChangeImage.classList.add("hidden");
   }
   formFieldInputImage.classList.remove("hidden");
@@ -1123,8 +1154,8 @@ async function copyOfferToClipboard() {
     btnCopyOffer.classList.remove("animate-pulse");
   }, 1000);
 
-  const clipboardText1 = configs.clipboard[0].content
-    ? `${configs.clipboard[0].content}
+  const clipboardText1 = clipboard.text1
+    ? `${clipboard.text1}
 
 `
     : "";
@@ -1135,14 +1166,14 @@ async function copyOfferToClipboard() {
 ${formFieldUrl.value}
 `;
   const clipboardText3 =
-    amazonProduct && amazonProduct.price.sns
+    scrapedProduct && scrapedProduct.price.sns
       ? `
-${configs.clipboard[1].content}
+${clipboard.text3}
 `
       : "";
-  const clipboardText4 = configs.clipboard[2].content
+  const clipboardText4 = clipboard.text4
     ? `
-${configs.clipboard[2].content}
+${clipboard.text4}
 `
     : "";
 

@@ -57,9 +57,7 @@ function setupRoutes(app) {
 
   app.get("/configs", offerController.getConfigs);
 
-  app.get("/amazonproduct", offerController.getAmazonProduct);
-
-  app.get("/amazonproduct", offerController.getAmazonProduct);
+  app.get("/scrapproduct", offerController.getStoreProduct);
 
   app.post("/image", offerController.fuseImage);
   

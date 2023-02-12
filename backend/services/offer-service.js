@@ -15,14 +15,14 @@ async function fuseImage(urls) {
 }
 
 async function getConfigs() {
-  const configs = { stores: null, categories: null, clipboard: null };
+  const configs = { stores: null, categories: null, clipboards: null };
   try {
     const stores = await offerDb.getStores();
     configs.stores = stores;
     const categories = await offerDb.getCategories();
     configs.categories = categories;
-    const clipboard = await offerDb.getClipboard();
-    configs.clipboard = clipboard;
+    const clipboards = await offerDb.getClipboards();
+    configs.clipboards = clipboards;
     return configs;
   } catch (error) {
     return false;

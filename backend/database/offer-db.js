@@ -85,7 +85,7 @@ async function getStores() {
   );
 }
 
-async function getClipboard() {
+async function getClipboards() {
   return sqlSelect(
     `SELECT * 
     FROM clipboard 
@@ -249,7 +249,7 @@ module.exports = {
   getStores,
   getCategories,
   getSignatures,
-  getClipboard,
+  getClipboards,
   addOffer,
   addStore,
   addCategory,
