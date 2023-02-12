@@ -266,7 +266,7 @@ function hideModalDialog(e) {
   imageBackgroundId = 0;
   changeBackground();
   imageArea.classList.remove("cursor-pointer");
-  clipboard = configs.clipboards[0];
+  clipboard = configs.clipboards ? configs.clipboards[0] : null;
 }
 
 function showModalRemoveConfirmation() {
@@ -477,7 +477,7 @@ function listOffers() {
         } else {
           createTableEmpty();
         }
-        if (!configs.stores || !configs.categories) {
+        if (!configs.stores || !configs.categories || configs.clipboards) {
           getConfigs();
         }
       }
