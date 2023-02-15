@@ -41,10 +41,12 @@ async function scrapNaturaProduct(offerUrl) {
       ),
     ],
     price: {
-      value: Number.parseInt(
-        Number.parseFloat(resultJSON.hits.hits[0]._source.skus[0].sale_price) *
-          Number.parseFloat(process.env.NATURA_DISCOUNT)
-      ),
+      value:
+        Math.floor(
+          resultJSON.hits.hits[0]._source.skus[0].sale_price *
+            Number.parseFloat(process.env.NATURA_DISCOUNT) *
+            100
+        ) / 100,
     },
     imageUrls: imageUrlsCollected,
   };

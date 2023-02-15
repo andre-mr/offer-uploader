@@ -1013,11 +1013,21 @@ async function fillFormWithScrap(store) {
   }
   formFieldTitle.value = scrapedProduct.title.substring(0, 50);
   if (clipboard.store == "Natura") {
-    formFieldBadge.value = "R$ " + Number.parseInt(scrapedProduct.price.value);
+    formFieldBadge.value =
+      "R$ " +
+      Number.parseFloat(
+        scrapedProduct.price.value
+          .toString()
+          .slice(0, scrapedProduct.price.value.toString().length - 1)
+      ).toLocaleString("pt-BR", {
+        style: "decimal",
+        minimumIntegerDigits: 1,
+        minimumFractionDigits: 2,
+      });
   } else {
     formFieldBadge.value =
       "R$ " +
-      Number.parseFloat(scrapedProduct.price.value).toLocaleString("pt-br", {
+      Number.parseFloat(scrapedProduct.price.value).toLocaleString("pt-BR", {
         style: "decimal",
         minimumIntegerDigits: 1,
         minimumFractionDigits: 2,
