@@ -50,9 +50,7 @@ function setupRoutes(app) {
   app.delete("/signatures/delete", offerController.deleteSignature);
   app.put("/signatures/update", offerController.updateSignature);
 
-  app.get("/clipboard", offerController.getClipboard);
-  app.post("/clipboard/add", offerController.addClipboard);
-  app.delete("/clipboard/delete", offerController.deleteClipboard);
+  app.get("/clipboards", offerController.getClipboards);
   app.put("/clipboard/update", offerController.updateClipboard);
 
   app.get("/configs", offerController.getConfigs);

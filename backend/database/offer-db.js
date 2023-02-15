@@ -1,9 +1,29 @@
 const mysql = require("mysql2/promise.js");
 
 async function updateClipboard(clipboard) {
-  let sql = `UPDATE clipboard SET content=? WHERE id=? `;
-  let values = [clipboard.content, clipboard.id];
-  return await sqlUpdateOrDelete(sql, values);
+  let sql = "UPDATE clipboard SET";
+  let values = [];
+  let setStatement = "";
+
+  if (clipboard.text1 != null) {
+    setStatement += " text1=?";
+    values.push(clipboard.text1);
+  }
+  if (clipboard.text3 != null) {
+    setStatement += " text3=?";
+    values.push(clipboard.text3);
+  }
+  if (clipboard.text4 != null) {
+    setStatement += " text4=?";
+    values.push(clipboard.text4);
+  }
+  sql += setStatement + " WHERE id=?";
+  values.push(clipboard.id);
+
+  if (values.length > 0) {
+    return await sqlUpdateOrDelete(sql, values);
+  }
+  return;
 }
 
 async function updateSignature(signature) {

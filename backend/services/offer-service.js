@@ -69,14 +69,6 @@ async function deleteStore(store) {
   }
 }
 
-async function deleteClipboard(clipboard) {
-  try {
-    return await offerDb.deleteClipboard(clipboard);
-  } catch (error) {
-    throw new Error(error.message);
-  }
-}
-
 async function addSignature(signature) {
   try {
     return await offerDb.addSignature(signature);
@@ -98,15 +90,6 @@ async function addCategory(category) {
 async function addStore(store) {
   try {
     return await offerDb.addStore(store);
-  } catch (error) {
-    return false;
-    throw new Error(error.message);
-  }
-}
-
-async function addClipboard(clipboard) {
-  try {
-    return await offerDb.addClipboard(clipboard);
   } catch (error) {
     return false;
     throw new Error(error.message);
@@ -172,9 +155,9 @@ async function getActiveOfferList() {
   }
 }
 
-async function getClipboard() {
+async function getClipboards() {
   try {
-    return await offerDb.getClipboard();
+    return await offerDb.getClipboards();
   } catch (error) {
     return false;
   }
@@ -403,9 +386,7 @@ module.exports = {
   getConfigs,
   getInactiveOfferList,
   updateSignature,
-  addClipboard,
   updateClipboard,
-  deleteClipboard,
-  getClipboard,
+  getClipboards,
   fuseImage,
 };
