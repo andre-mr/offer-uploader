@@ -1011,7 +1011,9 @@ async function fillFormWithScrap(store) {
   } else {
     btnChangeImage.classList.add("hidden");
   }
-  formFieldTitle.value = scrapedProduct.title.substring(0, 50);
+  formFieldTitle.value = scrapedProduct.title
+    .substring(0, 50)
+    .replace("&#39;", "'");
   if (clipboard.store == "Natura") {
     const naturaPrice = Number.parseFloat(
       scrapedProduct.price.value
@@ -1020,7 +1022,8 @@ async function fillFormWithScrap(store) {
       minimumIntegerDigits: 1,
       minimumFractionDigits: 2,
     });
-    formFieldBadge.value = "R$ " + naturaPrice.slice(0, naturaPrice.length - 1) + "0";
+    formFieldBadge.value =
+      "R$ " + naturaPrice.slice(0, naturaPrice.length - 1) + "0";
   } else {
     formFieldBadge.value =
       "R$ " +
