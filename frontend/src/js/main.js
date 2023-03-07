@@ -1012,7 +1012,7 @@ async function fillFormWithScrap(store) {
     btnChangeImage.classList.add("hidden");
   }
   formFieldTitle.value = scrapedProduct.title
-    .substring(0, 50)
+    .substring(0, 100)
     .replace("&#39;", "'");
   if (clipboard.store == "Natura") {
     const naturaPrice = Number.parseFloat(
