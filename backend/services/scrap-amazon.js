@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const he = require("he");
 // const fs = require("fs");
 
 async function scrapAmazonProduct(amazonUrl) {
@@ -36,10 +37,11 @@ async function scrapAmazonProduct(amazonUrl) {
     body: null,
     method: "GET",
   });
-  
+
   if (result) {
     const resultText = await result.text();
-    const title = await getTitle(resultText);
+    let title = await getTitle(resultText);
+    title = he.decode(title);
     const descriptions = await getDescriptions(resultText);
     const price = await getPrice(resultText);
     const imageUrls = await getImages(resultText);

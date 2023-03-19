@@ -1,8 +1,10 @@
 import "/css/style.css";
 
 const urlDomain = "http://localhost:3000";
-const urlImagesDomain = "https://ibb.co";
-const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
+const urlImagesDomain = "https://images.clubebaby.com";
+const imageBackgroundUrl = "https://images.clubebaby.com/offers/backgrounds/";
+// const urlImagesDomain = "https://ibb.co";
+// const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
 
 const appContainer = document.getElementById("appContainer");
 const loginArea = document.getElementById("loginArea");
@@ -918,21 +920,6 @@ function validateUrl() {
     }
     return false;
   }
-
-  if (
-    formFieldUrl.value.indexOf("/amzn.") >= 0 ||
-    formFieldUrl.value.indexOf("amazon.com") >= 0
-  ) {
-    btnScrap.classList.remove("hidden");
-
-    return true;
-  } else {
-    if (!btnScrap.classList.contains("hidden")) {
-      btnScrap.classList.add("hidden");
-    }
-
-    return false;
-  }
 }
 
 function scrapProduct(e) {
@@ -1011,9 +998,7 @@ async function fillFormWithScrap(store) {
   } else {
     btnChangeImage.classList.add("hidden");
   }
-  formFieldTitle.value = scrapedProduct.title
-    .substring(0, 100)
-    .replace("&#39;", "'");
+  formFieldTitle.value = scrapedProduct.title.substring(0, 100);
   if (clipboard.store == "Natura") {
     const naturaPrice = Number.parseFloat(
       scrapedProduct.price.value
@@ -1257,6 +1242,8 @@ function fuseImage() {
 }
 
 function SanitizeURL(url) {
+  console.log("url");
+  console.log(url);
   let sanitizedURL = url ? url : "";
   const comAcentos = "ÄÅÁÂÀÃäáâàãÉÊËÈéêëèÍÎÏÌíîïìÖÓÔÒÕöóôòõÜÚÛüúûùÇç";
   const semAcentos = "AAAAAAaaaaaEEEEeeeeIIIIiiiiOOOOOoooooUUUuuuuCc";
