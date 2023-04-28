@@ -1,8 +1,12 @@
 import "/css/style.css";
 
-const urlDomain = "http://localhost:3000";
-const urlImagesDomain = "https://ibb.co";
-const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
+const urlDomain = "https://api.cadastro.clubebaby.com";
+const urlImagesDomain = "https://images.clubebaby.com";
+const imageBackgroundUrl = "https://images.clubebaby.com/offers/backgrounds/";
+
+// const urlDomain = "http://localhost:3000";
+// const urlImagesDomain = "https://ibb.co";
+// const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
 
 const appContainer = document.getElementById("appContainer");
 const loginArea = document.getElementById("loginArea");
@@ -388,12 +392,16 @@ function saveOffer(e) {
   selectedOffer.code = formFieldCode.value ? formFieldCode.value : null;
   selectedOffer.store =
     formFieldStore.options[formFieldStore.selectedIndex].value;
-  selectedOffer.categories =
-    '"' + formFieldCategories.selectedOptions.length > 0
-      ? Array.from(formFieldCategories.selectedOptions).map(
-          (option) => option.value
-        ) + '"'
-      : autoDefineCategory();
+  if (formFieldCategories.selectedOptions.length > 0) {
+    selectedOffer.categories =
+      '"' +
+      Array.from(formFieldCategories.selectedOptions).map(
+        (option) => option.value
+      ) +
+      '"';
+  } else {
+    selectedOffer.categories = '"' + autoDefineCategory() + '"';
+  }
   selectedOffer.locations = null;
   selectedOffer.url = formFieldUrl.value;
   selectedOffer.valid_till = null;
