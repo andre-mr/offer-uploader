@@ -1,12 +1,8 @@
 import "/css/style.css";
 
-const urlDomain = "https://api.cadastro.clubebaby.com";
-const urlImagesDomain = "https://images.clubebaby.com";
-const imageBackgroundUrl = "https://images.clubebaby.com/offers/backgrounds/";
-
-// const urlDomain = "http://localhost:3000";
-// const urlImagesDomain = "https://ibb.co";
-// const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
+const urlDomain = "http://localhost:3000";
+const urlImagesDomain = "https://ibb.co";
+const imageBackgroundUrl = "https://ibb.co/offers/backgrounds/";
 
 const appContainer = document.getElementById("appContainer");
 const loginArea = document.getElementById("loginArea");
