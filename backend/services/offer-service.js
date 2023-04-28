@@ -242,7 +242,7 @@ async function closeBatch() {
     } else {
       fileToPackage.file = imageBuffer;
     }
-    offer.url = await changeStoreTag(offer.url);
+    // offer.url = await changeStoreTag(offer.url);
     fileToPackage.name = fileName;
     uploadPackage.push(fileToPackage);
   }

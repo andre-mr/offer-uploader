@@ -354,7 +354,7 @@ function checkForm() {
       !formFieldCode.value) ||
     (formFieldType.options[formFieldType.selectedIndex].value != "code" &&
       formFieldCode.value) ||
-    !formFieldCategories.selectedOptions.length > 0 ||
+    // !formFieldCategories.selectedOptions.length > 0 ||
     !formFieldUrl.value ||
     (checkImageFile.checked && !imageFile) ||
     (!checkImageFile.checked && !formFieldInputImage.value)
@@ -389,11 +389,11 @@ function saveOffer(e) {
   selectedOffer.store =
     formFieldStore.options[formFieldStore.selectedIndex].value;
   selectedOffer.categories =
-    '"' +
-    Array.from(formFieldCategories.selectedOptions).map(
-      (option) => option.value
-    ) +
-    '"';
+    '"' + formFieldCategories.selectedOptions.length > 0
+      ? Array.from(formFieldCategories.selectedOptions).map(
+          (option) => option.value
+        ) + '"'
+      : autoDefineCategory();
   selectedOffer.locations = null;
   selectedOffer.url = formFieldUrl.value;
   selectedOffer.valid_till = null;
@@ -437,6 +437,92 @@ function saveOffer(e) {
       console.log("Something went wrong!", err);
       formWarningShow();
     });
+}
+
+function autoDefineCategory() {
+  const title = formFieldTitle.value.toLowerCase();
+  const categoriesByTitle = {
+    fralda: "Fraldas em Promoção",
+
+    umedec: "Lenços Umedecidos",
+    lenco: "Lenços Umedecidos",
+    lenço: "Lenços Umedecidos",
+
+    brinquedo: "Brinquedos",
+    mattel: "Brinquedos",
+    "fisher price": "Brinquedos",
+    toys: "Brinquedos",
+
+    leite: "Alimentos e Bebidas",
+    formula: "Alimentos e Bebidas",
+    fórmula: "Alimentos e Bebidas",
+    lacteo: "Alimentos e Bebidas",
+    lácteo: "Alimentos e Bebidas",
+    chocolat: "Alimentos e Bebidas",
+    cereal: "Alimentos e Bebidas",
+    biscoito: "Alimentos e Bebidas",
+    nestle: "Alimentos e Bebidas",
+    aptamil: "Alimentos e Bebidas",
+
+    mamadeira: "Acessórios",
+    copo: "Acessórios",
+    garrafa: "Acessórios",
+    babador: "Acessórios",
+    mordedor: "Acessórios",
+    esterilizador: "Acessórios",
+    travesseiro: "Acessórios",
+    banheiro: "Acessórios",
+    banheira: "Acessórios",
+
+    cotonete: "Saúde Higiene e Cuidados Pessoais",
+    sabonete: "Saúde Higiene e Cuidados Pessoais",
+    "creme preventivo": "Saúde Higiene e Cuidados Pessoais",
+    shampoo: "Saúde Higiene e Cuidados Pessoais",
+    xampu: "Saúde Higiene e Cuidados Pessoais",
+    condicionador: "Saúde Higiene e Cuidados Pessoais",
+    creme: "Saúde Higiene e Cuidados Pessoais",
+    umidificador: "Saúde Higiene e Cuidados Pessoais",
+    nebulizador: "Saúde Higiene e Cuidados Pessoais",
+    "escova de dente": "Saúde Higiene e Cuidados Pessoais",
+    talco: "Saúde Higiene e Cuidados Pessoais",
+    sabao: "Saúde Higiene e Cuidados Pessoais",
+    "protetor solar": "Saúde Higiene e Cuidados Pessoais",
+
+    "carrinho de bebe": "Carrinho de Bebê",
+    "carrinho de bebê": "Carrinho de Bebê",
+    "carrinho para bebê": "Carrinho de Bebê",
+
+    cadeirinha: "Cadeirinha para Automóvel",
+    assento: "Cadeirinha para Automóvel",
+
+    conjunto: "Roupinhas",
+    conjuntinho: "Roupinhas",
+    pijama: "Roupinhas",
+    calca: "Roupinhas",
+    calça: "Roupinhas",
+    camiseta: "Roupinhas",
+    body: "Roupinhas",
+    moletom: "Roupinhas",
+    blusa: "Roupinhas",
+    macacao: "Roupinhas",
+    macacão: "Roupinhas",
+    oculos: "Roupinhas",
+    óculos: "Roupinhas",
+    calcado: "Roupinhas",
+    calçado: "Roupinhas",
+  };
+
+  let choosenCategory = "";
+  for (const key in categoriesByTitle) {
+    if (title.includes(key)) {
+      choosenCategory = categoriesByTitle[key];
+      break;
+    }
+  }
+  if (choosenCategory == "") {
+    choosenCategory = "Geral";
+  }
+  return choosenCategory;
 }
 
 function listOffers() {
