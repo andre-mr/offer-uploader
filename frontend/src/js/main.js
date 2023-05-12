@@ -409,10 +409,11 @@ function saveOffer(e) {
     : null;
   selectedOffer.imageUrl =
     !checkImageFile.checked &&
+    scrapedProduct &&
     scrapedProduct.imageUrls &&
     scrapedProduct.imageUrls.length > 0
       ? scrapedProduct.imageUrls[scrapedImageIndex]
-      : null;
+      : formFieldInputImage.value;
 
   const defaultHeader = new Headers();
   defaultHeader.append("Content-Type", "application/json");

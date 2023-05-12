@@ -11,7 +11,7 @@ async function fuseImage(req, res) {
     sendResponse(null, res);
   }
 
-  process.kill(process.pid); // clear cpanel node multiple NPROC usage
+  // process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getStoreProduct(req, res) {
@@ -33,7 +33,7 @@ async function getStoreProduct(req, res) {
     sendResponse(null, res);
   }
 
-  process.kill(process.pid); // clear cpanel node multiple NPROC usage
+  // process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getConfigs(req, res) {
@@ -163,7 +163,7 @@ async function getUploadedOfferList(req, res) {
     sendResponse(null, res);
   }
 
-  process.kill(process.pid); // clear cpanel node multiple NPROC usage
+  // process.kill(process.pid); // clear cpanel node multiple NPROC usage
 }
 
 async function getActiveOfferList(req, res) {
